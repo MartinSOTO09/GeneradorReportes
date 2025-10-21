@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Generador de Reportes Word en ZIP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+
+<body>
+  <h1 class="page-title">Generador de Archivos</h1>
+  <p class="page-sub">Complete la información para generar la documentacion</p>
+  <form id="reporteForm">
+    <div class="cards-container"> <!-- Perfil del Usuario -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="hdr-icon" aria-hidden="true"></i>
+            <div>
+              <h3>Perfil del Usuario</h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body grid-3">
+          <div> <label>Seleccionar Perfil</label> <select id="usuario" required>
+              <option value="">Seleccione su perfil</option>
+            </select> </div>
+          <div> <label>Nombre</label> <input type="text" id="usuario_nombre" placeholder="Auto-completado" readonly>
+          </div>
+          <div> <label>Email</label> <input type="text" id="usuario_email" placeholder="Auto-completado" readonly>
+          </div>
+        </div>
+      </section> <!-- Información General -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title"> <i class="hdr-icon" aria-hidden="true"></i>
+            <div>
+              <h3>Información General</h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body info-grid">
+          <div class="info-left">
+            <!-- Row 1: Solman, Título, Ticket -->
+            <div class="row1" style="display:grid;grid-template-columns:200px 200px 1fr;gap:0.8rem;align-items:center">
+              <div><label>Solman</label><input type="number" id="solman" placeholder="Ej: 12345" required></div>
+              <div><label>Ticket</label><input type="number" id="ticket" placeholder="Ej: 67890" required></div>
+              <div><label>Título</label><input type="text" id="titulo" placeholder="Título de la solicitud" required>
+              </div>
+            </div>
+
+            <!-- Row 2: Base Origen, Esquema Origen, Procedure, Sistemas -->
+            <div class="row2"
+              style="display:grid;grid-template-columns:200px 200px 1fr 300px;gap:0.8rem;margin-top:0.8rem;align-items:center">
+              <div><label>Base Origen</label>
+                <select id="base_origen">
+                  <option value="">Seleccione</option>
+                  <option value="">Seleccione</option>
+                  <option>TAMAP1QA</option>
+                  <option>TAMAPPQA</option>
+                  <option>TAMTEPQA</option>
+                  <option>TAMTR01Q</option>
+                  <option>TAMTR02Q</option>
+                  <option>TAMTR03Q</option>
+                  <option>TAMTR04Q</option>
+                  <option>TAMTR08Q</option>
+                  <option>TNSTR02Q</option>
+                </select>
+              </div>
+              <div><label>Esquema Origen</label>
+                <select id="esquema_origen" required>
+                  <option value="">Seleccione</option>
+                  <option>ACA_OWNER</option>
+                  <option>ACA_USER</option>
+                  <option>ACC</option>
+                  <option>ACC_ADMIN</option>
+                  <option>AGO</option>
+                  <option>ALG_USER</option>
+                  <option>BIO_OWNER</option>
+                  <option>BIO_USER</option>
+                  <option>BTQ</option>
+                  <option>BTO_ADMIN</option>
+                  <option>CCO</option>
+                  <option>CCO_ADMIN</option>
+                  <option>CCO_BK</option>
+                  <option>CCO_BK_USER</option>
+                  <option>CCO_SP</option>
+                  <option>CCO_OWNER</option>
+                  <option>CCO_USER</option>
+                  <option>CCR</option>
+                  <option>CCS_ADMIN</option>
+                  <option>CCS_OWNER</option>
+                  <option>CCS_USER</option>
+                  <option>CDB_OWNER</option>
+                  <option>CDB_USER</option>
+                  <option>CKN2_OWNER</option>
+                  <option>CKN2_USER</option>
+                  <option>CKN_OWNER</option>
+                  <option>CKNTOC_OWNER</option>
+                  <option>CKNTOC_USER</option>
+                  <option>CNP</option>
+                  <option>CNP_ADMIN</option>
+                  <option>COM</option>
+                  <option>COO_ADMIN</option>
+                  <option>COO_OWNER</option>
+                  <option>COO_USER</option>
+                  <option>COS_OWNER</option>
+                  <option>COS_USER</option>
+                  <option>CPR</option>
+                  <option>CPR_ADMIN</option>
+                  <option>CTR</option>
+                  <option>CTR_ADMIN</option>
+                  <option>CVS</option>
+                  <option>CVS_ADMIN</option>
+                  <option>DAC_USER</option>
+                  <option>DDB_ADMIN</option>
+                  <option>DDB_READ</option>
+                  <option>DIM</option>
+                  <option>DIM_ADMIN</option>
+                  <option>DSM_USER</option>
+                  <option>EDI_OWNER</option>
+                  <option>EDI_USER</option>
+                  <option>EFA</option>
+                  <option>EFA_ADMIN</option>
+                  <option>EXTHOL</option>
+                  <option>EXTIMSI</option>
+                  <option>EXTRADA</option>
+                  <option>EXTTET</option>
+                  <option>FEL_OWNER</option>
+                  <option>FEL_USER</option>
+                  <option>FSA_OWNER</option>
+                  <option>FSA_USER</option>
+                  <option>GBU</option>
+                  <option>GBU_ADMIN</option>
+                  <option>GBU_FAC</option>
+                  <option>ICA_OWNER</option>
+                  <option>ICA_USER</option>
+                  <option>ICO_OWNER</option>
+                  <option>ICO_USER</option>
+                  <option>IGP</option>
+                  <option>IGP_ADMIN</option>
+                  <option>INTRAACT</option>
+                  <option>INTRADBA</option>
+                  <option>INV_OWNER</option>
+                  <option>INV_USER</option>
+                  <option>ITS_OWNER</option>
+                  <option>ITS_USER</option>
+                  <option>JAT</option>
+                  <option>JAT_ADMIN</option>
+                  <option>LAB_TAM</option>
+                  <option>LAC</option>
+                  <option>LAC_ADMIN</option>
+                  <option>LAC_AUTO</option>
+                  <option>LST</option>
+                  <option>M2K_TEST</option>
+                  <option>MSG</option>
+                  <option>MST</option>
+                  <option>MST_ADMIN</option>
+                  <option>MTC</option>
+                  <option>MTR</option>
+                  <option>MTRC</option>
+                  <option>MTRC_ADMIN</option>
+                  <option>MTRUCA</option>
+                  <option>MTRUCA_ADMIN</option>
+                  <option>MYD_USER</option>
+                  <option>MYP_OWNER</option>
+                  <option>MYP_USER</option>
+                  <option>OCR_OWNER</option>
+                  <option>ODS</option>
+                  <option>ODS_ADMIN</option>
+                  <option>ODS_ALG</option>
+                  <option>ODS_TQS</option>
+                  <option>ODS_TUCA</option>
+                  <option>PIS</option>
+                  <option>PIS_ADMIN</option>
+                  <option>PPS</option>
+                  <option>PPS_ADMIN</option>
+                  <option>PTR_OWNER</option>
+                  <option>PTR_USER</option>
+                  <option>QMT</option>
+                  <option>QMT_ADMIN</option>
+                  <option>RCB</option>
+                  <option>RCH_ADMIN</option>
+                  <option>RCT</option>
+                  <option>RCT_ADMIN</option>
+                  <option>RDJ_OWNER</option>
+                  <option>RDJ_USER</option>
+                  <option>RHI_USER</option>
+                  <option>RHO_ADMIN</option>
+                  <option>RMB</option>
+                  <option>RMU_ADMIN</option>
+                  <option>SAB</option>
+                  <option>SAB_ADMIN</option>
+                  <option>SBS_USER</option>
+                  <option>SCD</option>
+                  <option>SCT</option>
+                  <option>SCV_OWNER</option>
+                  <option>SCV_USER</option>
+                  <option>SIM</option>
+                  <option>SMA_USER</option>
+                  <option>SMI_ADMIN</option>
+                  <option>SMT_APPL</option>
+                  <option>SPF</option>
+                  <option>SPF_ADMIN</option>
+                  <option>STF_OWNER</option>
+                  <option>STF_USER</option>
+                  <option>STR</option>
+                  <option>STR_ADMIN</option>
+                  <option>SVC</option>
+                  <option>SVC_ADMIN</option>
+                  <option>TBS_OWNER</option>
+                  <option>TBS_USER</option>
+                  <option>TEN</option>
+                  <option>TEN_ADMIN</option>
+                  <option>TLG_OWNER</option>
+                  <option>TLG_USER</option>
+                  <option>TMP_OWNER</option>
+                  <option>TMP_USER</option>
+                  <option>TPM_OWNER</option>
+                  <option>TPM_USER</option>
+                  <option>TPS</option>
+                  <option>TPS_ADMIN</option>
+                  <option>TPSTC</option>
+                  <option>TPSTC_ADMIN</option>
+                  <option>TPSTUCA</option>
+                  <option>TPSTUCA_ADMIN</option>
+                  <option>TQS_USER</option>
+                  <option>TRT</option>
+                  <option>TST_OWNER</option>
+                  <option>TST_USER</option>
+                  <option>TTS</option>
+                  <option>TTS_ADMIN</option>
+                  <option>TTT_OWNER</option>
+                  <option>TTT_USER</option>
+                  <option>TUCA_READ</option>
+                  <option>TUCA_USER</option>
+                  <option>VBC_OWNER</option>
+                  <option>VBC_USER</option>
+                  <option>VBM_OWNER</option>
+                  <option>VBM_USER</option>
+                  <option>VBO</option>
+                  <option>VBO_ADMIN</option>
+                  <option>VBO_USER</option>
+                  <option>VFC_OWNER</option>
+                  <option>VFC_USER</option>
+                  <option>VFT</option>
+                  <option>VFT_ADMIN</option>
+                  <option>VFT_TUCA</option>
+                </select>
+              </div>
+              <div><label>Procedure</label><input type="text" id="procedure" placeholder="Nombre del procedimiento"
+                  required></div>
+              <div><label>Sistemas</label>
+                <select id="sistemas" required>
+                  <option selected></option>
+                  <option>TAM-APLICACION DE BECAS</option>
+                  <option>TAM-BASE RRHH INTERMEDIA</option>
+                  <option>TAM-TENARIS TRAVEL GEOLOCATION</option>
+                  <option>TAM-ALMACEN DE COPLES TERMINADOS</option>
+                  <option>TAM-ANALISIS DE ESPECIFICACION</option>
+                  <option>TAM-ANALISIS DE GESTION OPERATIVA</option>
+                  <option>TAM-BOUTIQUE-TAMSA</option>
+                  <option>TAM-CALCULO DEL TOCHO</option>
+                  <option>TAM-CATALOGO DE PRODUCTOS</option>
+                  <option>TAM-CCURE 800/800 (Software House)</option>
+                  <option>TAM-CONFIRMACION DE VENTA</option>
+                  <option>TAM-CONTROL DE ACCESOS</option>
+                  <option>TAM-COSTEO DE PRODUCTOS</option>
+                  <option>TAM-Central Data Base</option>
+                  <option>TAM-Certificado Tenaris de Calidad</option>
+                  <option>TAM-Consumos Telefonicos Departamentales Tamsa</option>
+                  <option>TAM-ENTERPRISE APP INTEGRATION</option>
+                  <option>TAM-ESTANDARES DE INGENIERIA</option>
+                  <option>TAM-FACTURACION</option>
+                  <option>TAM-Field Services Administration</option>
+                  <option>TAM-GENERADOR RUTAS EN AUTOMATICO</option>
+                  <option>TAM-INDUSTRIAL LOCAL DATA</option>
+                  <option>TAM-INTERFASES CON AUTOMATIZACION</option>
+                  <option>TAM-INVENTARIOS FISICOS</option>
+                  <option>TAM-LABORATORIOS Y CERTIFICACION</option>
+                  <option>TAM-MANTENIMIENTO DE RECURSOS</option>
+                  <option>TAM-MARCADURAS</option>
+                  <option>TAM-MATERIA PRIMA</option>
+                  <option>TAM-MY WIP</option>
+                  <option>TAM-OPERATIONAL DATA STORAGE</option>
+                  <option>TAM-Order Dressing</option>
+                  <option>TAM-PLANEACION DE LA PRODUCCION</option>
+                  <option>TAM-PORTAL-GASTOS</option>
+                  <option>TAM-PRODUCC INTEGRAL DE LA PLANTA</option>
+                  <option>TAM-PRODUCTOS TERMINADOS</option>
+                  <option>TAM-PROG Y CONTROL DE APLICACIONES</option>
+                  <option>TAM-RESPALDO-RECUP INFO EN ADABAS</option>
+                  <option>TAM-Reporte de procesos críticos acordados</option>
+                  <option>TAM-SEGUIMIENTO DE OPS</option>
+                  <option>TAM-SGT</option>
+                  <option>TAM-SICRAM</option>
+                  <option>TAM-SISTEMA INTEGRAL DE COFI</option>
+                  <option>TAM-Sistema de Cargas al MIL</option>
+                  <option>TAM-Sistema de Control de Terceros</option>
+                  <option>TAM-TPS CeCo Mx</option>
+                  <option>TAM-TPS F</option>
+                  <option>TAM-TPS Sucked Rods Mx</option>
+                  <option>TAM-TTS Tamsa</option>
+
+                  <option>TCO-SAFETY HOUR AND MULTIPLE OPS</option>
+                  <option>TCO-APPLICATION SCHEDG AND CONTROL</option>
+                  <option>TCO-WAREHOUSE COUPLING</option>
+                  <option>TCO-CHEM/PHYS/MET LAB CERTIFICATION</option>
+                  <option>TCO-ENGINEERING STANDARDS</option>
+                  <option>TCO-ENTERPRISE APP INTEGRATION</option>
+                  <option>TCO-FINISHED PRODUCTS WAREHOUSE</option>
+                  <option>TCO-MATERIALS REGISTER CONTROL SYSTEM</option>
+                  <option>TCO-OPERATIONAL DATA STORAGE</option>
+                  <option>TCO-PHYSICAL INVENTORIES</option>
+                  <option>TCO-PIPES MARKINGS</option>
+                  <option>TCO-PRODUCTION PLANNING</option>
+                  <option>TCO-PRODUCTION STATISTICS</option>
+                  <option>TCO-PRODUCTS CATALOGUE</option>
+                  <option>TCO-Programación de Personal y Timekeeping</option>
+                  <option>TCO-RAW MATERIAL</option>
+                  <option>TCO-ROUTE SHEET</option>
+                  <option>TCO-SALES CONFIRMATION</option>
+                  <option>TCO-SPECIFICATION ANALYSIS</option>
+                  <option>TCO-STEEL BAR BILLET CALCULATE</option>
+                  <option>TQO-Tenaris Quality Certificate</option>
+                  <option>TQO-WOT TUCA</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 3: Base Destino, Esquema Destino, Check Mark -->
+            <div class="row3"
+              style="display:grid;grid-template-columns:200px 200px 1fr;gap:0.8rem;margin-top:0.8rem;align-items:center">
+              <div><label>Base Destino</label>
+                <select id="base_destino">
+                  <option value="">Seleccione</option>
+                  <option>TAMRMAOP</option>
+                  <option>TAMTR01P</option>
+                  <option>TAMTR02P</option>
+                  <option>TAMTR03P</option>
+                  <option>TAMTR04P</option>
+                  <option>TAMTR05P</option>
+                  <option>TAMTR07P</option>
+                  <option>TAMTR08P</option>
+
+                  <option>TNSTR01P</option>
+                  <option>TNSTR02P</option>
+
+                  <option>TNSALT1P</option>
+
+                  <option>TNSC001P</option>
+                  <option>TNSC002P</option>
+                  <option>TNSC003P</option>
+
+                  <option>TNSCAT1P</option>
+                  <option>TNSCAT2P</option>
+                  <option>TNSCAT3P</option>
+                  <option>TNSCAT4P</option>
+                </select>
+              </div>
+
+              <div><label>Esquema Destino</label>
+                <select id="esquemas_destino" required>
+                  <option value="">Seleccione</option>
+                  <option>ACA_OWNER</option>
+                  <option>ACA_USER</option>
+                  <option>ACC</option>
+                  <option>ACC_ADMIN</option>
+                  <option>AGO</option>
+                  <option>ALG_USER</option>
+                  <option>BIO_OWNER</option>
+                  <option>BIO_USER</option>
+                  <option>BTQ</option>
+                  <option>BTO_ADMIN</option>
+                  <option>CCO</option>
+                  <option>CCO_ADMIN</option>
+                  <option>CCO_BK</option>
+                  <option>CCO_BK_USER</option>
+                  <option>CCO_SP</option>
+                  <option>CCO_OWNER</option>
+                  <option>CCO_USER</option>
+                  <option>CCR</option>
+                  <option>CCS_ADMIN</option>
+                  <option>CCS_OWNER</option>
+                  <option>CCS_USER</option>
+                  <option>CDB_OWNER</option>
+                  <option>CDB_USER</option>
+                  <option>CKN2_OWNER</option>
+                  <option>CKN2_USER</option>
+                  <option>CKN_OWNER</option>
+                  <option>CKNTOC_OWNER</option>
+                  <option>CKNTOC_USER</option>
+                  <option>CNP</option>
+                  <option>CNP_ADMIN</option>
+                  <option>COM</option>
+                  <option>COO_ADMIN</option>
+                  <option>COO_OWNER</option>
+                  <option>COO_USER</option>
+                  <option>COS_OWNER</option>
+                  <option>COS_USER</option>
+                  <option>CPR</option>
+                  <option>CPR_ADMIN</option>
+                  <option>CTR</option>
+                  <option>CTR_ADMIN</option>
+                  <option>CVS</option>
+                  <option>CVS_ADMIN</option>
+                  <option>DAC_USER</option>
+                  <option>DDB_ADMIN</option>
+                  <option>DDB_READ</option>
+                  <option>DIM</option>
+                  <option>DIM_ADMIN</option>
+                  <option>DSM_USER</option>
+                  <option>EDI_OWNER</option>
+                  <option>EDI_USER</option>
+                  <option>EFA</option>
+                  <option>EFA_ADMIN</option>
+                  <option>EXTHOL</option>
+                  <option>EXTIMSI</option>
+                  <option>EXTRADA</option>
+                  <option>EXTTET</option>
+                  <option>FEL_OWNER</option>
+                  <option>FEL_USER</option>
+                  <option>FSA_OWNER</option>
+                  <option>FSA_USER</option>
+                  <option>GBU</option>
+                  <option>GBU_ADMIN</option>
+                  <option>GBU_FAC</option>
+                  <option>ICA_OWNER</option>
+                  <option>ICA_USER</option>
+                  <option>ICO_OWNER</option>
+                  <option>ICO_USER</option>
+                  <option>IGP</option>
+                  <option>IGP_ADMIN</option>
+                  <option>INTRAACT</option>
+                  <option>INTRADBA</option>
+                  <option>INV_OWNER</option>
+                  <option>INV_USER</option>
+                  <option>ITS_OWNER</option>
+                  <option>ITS_USER</option>
+                  <option>JAT</option>
+                  <option>JAT_ADMIN</option>
+                  <option>LAB_TAM</option>
+                  <option>LAC</option>
+                  <option>LAC_ADMIN</option>
+                  <option>LAC_AUTO</option>
+                  <option>LST</option>
+                  <option>M2K_TEST</option>
+                  <option>MSG</option>
+                  <option>MST</option>
+                  <option>MST_ADMIN</option>
+                  <option>MTC</option>
+                  <option>MTR</option>
+                  <option>MTRC</option>
+                  <option>MTRC_ADMIN</option>
+                  <option>MTRUCA</option>
+                  <option>MTRUCA_ADMIN</option>
+                  <option>MYD_USER</option>
+                  <option>MYP_OWNER</option>
+                  <option>MYP_USER</option>
+                  <option>OCR_OWNER</option>
+                  <option>ODS</option>
+                  <option>ODS_ADMIN</option>
+                  <option>ODS_ALG</option>
+                  <option>ODS_TQS</option>
+                  <option>ODS_TUCA</option>
+                  <option>PIS</option>
+                  <option>PIS_ADMIN</option>
+                  <option>PPS</option>
+                  <option>PPS_ADMIN</option>
+                  <option>PTR_OWNER</option>
+                  <option>PTR_USER</option>
+                  <option>QMT</option>
+                  <option>QMT_ADMIN</option>
+                  <option>RCB</option>
+                  <option>RCH_ADMIN</option>
+                  <option>RCT</option>
+                  <option>RCT_ADMIN</option>
+                  <option>RDJ_OWNER</option>
+                  <option>RDJ_USER</option>
+                  <option>RHI_USER</option>
+                  <option>RHO_ADMIN</option>
+                  <option>RMB</option>
+                  <option>RMU_ADMIN</option>
+                  <option>SAB</option>
+                  <option>SAB_ADMIN</option>
+                  <option>SBS_USER</option>
+                  <option>SCD</option>
+                  <option>SCT</option>
+                  <option>SCV_OWNER</option>
+                  <option>SCV_USER</option>
+                  <option>SIM</option>
+                  <option>SMA_USER</option>
+                  <option>SMI_ADMIN</option>
+                  <option>SMT_APPL</option>
+                  <option>SPF</option>
+                  <option>SPF_ADMIN</option>
+                  <option>STF_OWNER</option>
+                  <option>STF_USER</option>
+                  <option>STR</option>
+                  <option>STR_ADMIN</option>
+                  <option>SVC</option>
+                  <option>SVC_ADMIN</option>
+                  <option>TBS_OWNER</option>
+                  <option>TBS_USER</option>
+                  <option>TEN</option>
+                  <option>TEN_ADMIN</option>
+                  <option>TLG_OWNER</option>
+                  <option>TLG_USER</option>
+                  <option>TMP_OWNER</option>
+                  <option>TMP_USER</option>
+                  <option>TPM_OWNER</option>
+                  <option>TPM_USER</option>
+                  <option>TPS</option>
+                  <option>TPS_ADMIN</option>
+                  <option>TPSTC</option>
+                  <option>TPSTC_ADMIN</option>
+                  <option>TPSTUCA</option>
+                  <option>TPSTUCA_ADMIN</option>
+                  <option>TQS_USER</option>
+                  <option>TRT</option>
+                  <option>TST_OWNER</option>
+                  <option>TST_USER</option>
+                  <option>TTS</option>
+                  <option>TTS_ADMIN</option>
+                  <option>TTT_OWNER</option>
+                  <option>TTT_USER</option>
+                  <option>TUCA_READ</option>
+                  <option>TUCA_USER</option>
+                  <option>VBC_OWNER</option>
+                  <option>VBC_USER</option>
+                  <option>VBM_OWNER</option>
+                  <option>VBM_USER</option>
+                  <option>VBO</option>
+                  <option>VBO_ADMIN</option>
+                  <option>VBO_USER</option>
+                  <option>VFC_OWNER</option>
+                  <option>VFC_USER</option>
+                  <option>VFT</option>
+                  <option>VFT_ADMIN</option>
+                  <option>VFT_TUCA</option>
+                </select>
+              </div>
+              <div>
+                <label>Check Mark</label>
+                <div class="checkbox-row" style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">
+                  <label style="margin-right: 10px;"><input style="margin-right: 5px;" type="checkbox"
+                      value="AS400">AS400</label>
+                  <label style="margin-right: 10px;"><input style="margin-right: 5px;" type="checkbox"
+                      value="Web">Web</label>
+                  <label style="margin-right: 10px;"><input style="margin-right: 5px;" type="checkbox"
+                      value="Oracle">Oracle</label>
+                  <label style="margin-right: 10px;"><input style="margin-right: 5px;" type="checkbox"
+                      value="SAP">SAP</label>
+                  <label style="margin-right: 10px;"><input style="margin-right: 5px;" type="checkbox"
+                      value="ETL">ETL</label>
+                  <label style="margin-right: 10px;"><input style="margin-right: 5px;" type="checkbox"
+                      value="HOST">HOST</label>
+                  <label style="margin-right: 10px;"><input style="margin-right: 5px;" type="checkbox"
+                      value="DWT">DWT</label>
+                  <label style="margin-right: 10px;"><input style="margin-right: 5px;" type="checkbox"
+                      value="BATCH WIN">BATCH WIN</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="info-right"> </div>
+        </div>
+      </section> <!-- Origen / Destino (moved into Información General) --> <!-- Descripción / Resultado / Respaldos -->
+      <section class="card card-large card-large-expand">
+        <div class="card-header">
+          <div class="card-title"> <i class="hdr-icon" aria-hidden="true"></i>
+            <div>
+              <h3>Detalles y Respaldos</h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body details-grid">
+          <div class="desc-box"> <label>Descripción</label> <textarea id="descripcion" rows="4"
+              placeholder="Describa los detalles..." required></textarea> </div>
+          <div class="result-box"> <label>Resultado</label> <textarea id="resultado" rows="4"
+              placeholder="Describa el resultado..." required></textarea> </div>
+          <div class="upload-box"> <label>Respaldos</label>
+            <div class="dropzone">
+              <div class="dz-icon">⤴</div>
+              <div class="dz-text">Arrastre o</div> <button type="button" class="dz-select">Seleccionar</button> <input
+                type="file" id="respaldos" accept=".sql,.csv" multiple style="display:none">
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="form-actions"> <button type="button" class="btn-cancel">Cancelar</button> <button type="submit"
+        class="btn-primary">Generar Documento</button> </div>
+    </div>
+  </form>
+  <script src="js/releasePlan.js"></script>
+  <script src="js/TestEvidence.js"></script>
+  <script src="js/zipGenerator.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

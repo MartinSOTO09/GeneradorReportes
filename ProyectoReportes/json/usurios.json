@@ -1,0 +1,38 @@
+[
+    {
+        "id": "1",
+        "nombre": "Martha Iris Cruz",
+        "alias": "CRUZ Martha",
+        "email": "MCRUZ3@tenaris.com"
+    },
+    {
+        "id": "2",
+        "nombre": "Jimena Gallardo Peña",
+        "alias": "GALLADOR Jimena",
+        "email": "JGALLARDO@tenaris.com"
+    },
+    {
+        "id": "3",
+        "nombre": "Mario Martinez",
+        "alias": "MARTINEZ Mario",
+        "email": "MARMARTINEZ@tenaris.com"
+    },
+    {
+        "id": "4",
+        "nombre": "Gustavo Sepulveda",
+        "alias": "SEPULVEDA Gustavo",
+        "email": "GSEPULVEDA@tenaris.com"
+    },
+    {
+        "id": "5",
+        "nombre": "Martin Soto Ramirez",
+        "alias": "SOTO Martin",
+        "email": "MDSOTO@tenaris.com"
+    },
+    {
+        "id": "6",
+        "nombre": "Eduardo Garcia",
+        "alias": "GARCIA Eduardo",
+        "email": "EDUAGARCIA@tenaris.com"
+    }
+]
