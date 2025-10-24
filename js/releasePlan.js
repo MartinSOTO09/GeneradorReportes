@@ -232,6 +232,10 @@ async function generarReleasePlan(data) {
                 })
             );
 
+            
+            sections.push(new Paragraph({ text: ' ', spacing: { after: 80 } }));
+
+
             // Subsections for 1.x
             sections.push(
                 new Paragraph({
@@ -240,6 +244,13 @@ async function generarReleasePlan(data) {
                         new TextRun({ text: '1.1 Objective', font: 'Calibri', size: 24, bold: true, color: '000000' })
                     ],
                     spacing: { after: 120 }
+                })
+            );
+
+            sections.push(
+                new Paragraph({
+                    children: [new TextRun({ text: data.objetivo, font: 'Calibri', size: 20, color: '4F81BD', italics: true })],
+                    spacing: { after: 200 }
                 })
             );
 
@@ -610,7 +621,7 @@ async function generarReleasePlan(data) {
 
             const revisionHistory = [
                 ['Date', 'Version', 'Description', 'Approved / Revised by', 'Author'],
-                [new Date().toLocaleDateString('es-ES'), '1.0', data.descripcion, 'Martinez Benjamin', info.usuario.nombre]
+                [new Date().toLocaleDateString('es-ES'), '1.0', 'Creación del documento', 'Martinez Benjamin', info.usuario.nombre]
             ];
             sections.push(makeStyledDynamicTable(revisionHistory));
             sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla

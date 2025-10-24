@@ -142,6 +142,7 @@ label {
 
 input[type="text"],
 input[type="number"],
+input[type="url"],
 select,
 textarea {
   width: 100%;
@@ -198,11 +199,19 @@ textarea:focus {
   font-size: 0.9rem;
 }
 
+/* Show pointer when hovering over checkbox labels or inputs */
+.checkbox-row label,
+.checkbox-row input[type="checkbox"] {
+  cursor: pointer;
+}
+
 /* ===== Detalles y Respaldos ===== */
 .details-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 280px;
+  /* three flexible columns for text fields + narrower fixed-width column for upload */
+  grid-template-columns: 1fr 1fr 1fr 200px;
   gap: 1rem;
+  align-items: start;
 }
 
 .desc-box,
@@ -214,7 +223,11 @@ textarea:focus {
 
 textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 120px; /* default textarea size for good readability */
+}
+
+.objetivo-box textarea {
+  min-height: 120px; /* match other textareas for consistent height */
 }
 
 /* ===== Dropzone (subida de archivos) ===== */
@@ -223,11 +236,12 @@ textarea {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 0.6rem; /* reduced vertical padding to save space */
   border: 2px dashed var(--drop-border);
   border-radius: 6px;
   background-color: var(--drop-bg);
   text-align: center;
+  min-height: 110px; /* smaller footprint while remaining usable */
 }
 
 .dz-icon {
@@ -294,6 +308,13 @@ textarea {
 }
 
 /* ===== Responsive ===== */
+@media (max-width: 1100px) {
+  /* At medium widths stack into two columns to keep readability */
+  .details-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .info-grid {
     grid-template-columns: 1fr;

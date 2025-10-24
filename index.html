@@ -29,6 +29,14 @@
           <div> <label>Seleccionar Perfil</label> <select id="usuario" required>
               <option value="">Seleccione su perfil</option>
             </select> </div>
+          <div>
+            <label>Tipo de DB</label>
+            <select id="db_type" title="Seleccione el tipo de base de datos">
+              <option value="oracle" selected>Oracle (predefinida)</option>
+              <option value="postgres">Postgres</option>
+              <option value="linux">Linux</option>
+            </select>
+          </div>
           <div> <label>Nombre</label> <input type="text" id="usuario_nombre" placeholder="Auto-completado" readonly>
           </div>
           <div> <label>Email</label> <input type="text" id="usuario_email" placeholder="Auto-completado" readonly>
@@ -545,7 +553,6 @@
                 </select>
               </div>
               <div>
-                <label>Check Mark</label>
                 <div class="checkbox-row" style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">
                   <label style="margin-right: 10px;"><input style="margin-right: 5px;" type="checkbox"
                       value="AS400">AS400</label>
@@ -570,6 +577,7 @@
           <div class="info-right"> </div>
         </div>
       </section> <!-- Origen / Destino (moved into Información General) --> <!-- Descripción / Resultado / Respaldos -->
+      <!-- Postgres compact layout will be injected inline inside Información General when selected -->
       <section class="card card-large card-large-expand">
         <div class="card-header">
           <div class="card-title"> <i class="hdr-icon" aria-hidden="true"></i>
@@ -578,19 +586,21 @@
             </div>
           </div>
         </div>
-        <div class="card-body details-grid">
-          <div class="desc-box"> <label>Descripción</label> <textarea id="descripcion" rows="4"
-              placeholder="Describa los detalles..." required></textarea> </div>
-          <div class="result-box"> <label>Resultado</label> <textarea id="resultado" rows="4"
-              placeholder="Describa el resultado..." required></textarea> </div>
-          <div class="upload-box"> <label>Respaldos</label>
-            <div class="dropzone">
-              <div class="dz-icon">⤴</div>
-              <div class="dz-text">Arrastre o</div> <button type="button" class="dz-select">Seleccionar</button> <input
-                type="file" id="respaldos" accept=".sql,.csv" multiple style="display:none">
-            </div>
-          </div>
+    <div class="card-body details-grid">
+      <div class="objetivo-box"> <label>Objetivo</label> <textarea id="objetivo" rows="3"
+        placeholder="Objetivo del cambio o reporte..." required></textarea> </div>
+      <div class="desc-box"> <label>Descripción</label> <textarea id="descripcion" rows="4"
+        placeholder="Describa los detalles..." required></textarea> </div>
+      <div class="result-box"> <label>Resultado</label> <textarea id="resultado" rows="4"
+        placeholder="Describa el resultado..." required></textarea> </div>
+      <div class="upload-box"> <label>Respaldos</label>
+        <div class="dropzone">
+          <div class="dz-icon">⤴</div>
+          <div class="dz-text">Arrastre o</div> <button type="button" class="dz-select">Seleccionar</button> <input
+            type="file" id="respaldos" accept=".sql,.csv" multiple style="display:none">
         </div>
+      </div>
+    </div>
       </section>
     </div>
     <div class="form-actions"> <button type="button" class="btn-cancel">Cancelar</button> <button type="submit"

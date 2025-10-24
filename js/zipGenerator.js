@@ -2,10 +2,18 @@ async function generarZIP(data) {
     const zip = new JSZip();
 
     try {
-        // Generar documentos Word en paralelo
+        // Seleccionar generadores según el tipo de DB (soporta wrappers por tipo)
+        const db = (data && data.db_type) ? String(data.db_type).toLowerCase() : 'oracle';
+        const rpFnName = db === 'postgres' ? 'generarReleasePlan_postgres' : (db === 'linux' ? 'generarReleasePlan_linux' : 'generarReleasePlan');
+        const teFnName = db === 'postgres' ? 'generarTestEvidence_postgres' : (db === 'linux' ? 'generarTestEvidence_linux' : 'generarTestEvidence');
+
+        const rpFn = (typeof window !== 'undefined' && typeof window[rpFnName] === 'function') ? window[rpFnName] : (typeof globalThis !== 'undefined' && typeof globalThis[rpFnName] === 'function' ? globalThis[rpFnName] : generarReleasePlan);
+        const teFn = (typeof window !== 'undefined' && typeof window[teFnName] === 'function') ? window[teFnName] : (typeof globalThis !== 'undefined' && typeof globalThis[teFnName] === 'function' ? globalThis[teFnName] : generarTestEvidence);
+
+        // Generar documentos Word en paralelo usando las funciones seleccionadas
         const [releasePlanDoc, testEvidenceDoc] = await Promise.all([
-            generarReleasePlan(data),
-            generarTestEvidence(data)
+            rpFn(data),
+            teFn(data)
         ]);
 
         // Asegurar que los archivos agregados a JSZip sean ArrayBuffer o Uint8Array (compatibilidad)

@@ -381,6 +381,30 @@ async function generarTestEvidence(data) {
                     })
                 ]
             }),
+
+             // 1 OVERVIEW
+                // -------------------------
+                sections.push(
+                    new Paragraph({
+                        heading: HeadingLevel.HEADING_1,
+                        children: [new TextRun({ text: '1 OVERVIEW', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24 })],
+                        spacing: { before: 20, after: 20 },
+                        shading: { fill: '2E8B57' }
+                    })
+                );
+
+                sections.push(new Paragraph({ text: ' ', spacing: { after: 80 } }));
+
+                sections.push(
+                new Paragraph({
+                    children: [new TextRun({ text: data.objetivo, font: 'Calibri', size: 20, color: '4F81BD', italics: true })],
+                    spacing: { after: 120 }
+                })
+            );
+
+                sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } }));
+
+
                 // 2 GENERAL INFORMATION
                 // -------------------------
                 sections.push(
@@ -400,11 +424,11 @@ async function generarTestEvidence(data) {
                     children: [new TextRun({ text: '2.1	SOLUTION SPECIFICATION', font: 'Calibri', size: 24, bold: true, color: '000000' })],
                     spacing: { after: 160 }
                 })
-            );
+            ); 
 
             const solution = [
                 ['Solution Specification', 'Solution Specification Title', 'Solution Proposal', 'Solution Proposal Title'],
-                [data.solman, data.titulo, ' ', ' ']
+                [' ', ' ', ' ', ' ']
             ];
 
             sections.push(makeStyledDynamicTable(solution));
@@ -831,7 +855,7 @@ async function generarTestEvidence(data) {
 
             const revision = [
                 ['Date', 'Version', 'Description', 'Approved / Revised by', 'Author'],
-                [new Date().toLocaleDateString('es-ES'), '1.0', data.descripcion, 'Martinez Benjamin', info.usuario.nombre]
+                [new Date().toLocaleDateString('es-ES'), '1.0', 'Creacion del documento', 'Martinez Benjamin', info.usuario.nombre]
             ];
             sections.push(makeStyledDynamicTable(revision));
             sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
@@ -943,7 +967,6 @@ async function generarTestEvidence(data) {
                         // Índice manual: párrafos con líder de puntos y número al final
                         ...makeManualTOC(
                             ['1 OVERVIEW', '2 GENERAL INFORMATION', '3 IMPLEMENTATION PARTICIPANTS', '4 CHANGES TO APPLY', '5 OBJECTS TO DEPLOY', '6 EXECUTION PLAN', '7 COMMENTS', '8 REVISION HISTORY'],
-                            // Números fijos (puedes ajustarlos según el documento final)
                             ['1', '2', '3', '4', '5', '6', '7', '8']
                         ),
                         // Salto de página para empezar las secciones en la siguiente
