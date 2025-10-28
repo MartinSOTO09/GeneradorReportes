@@ -333,4 +333,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Animar la limpieza del formulario conservando el usuario
         animateClearPreserveUser();
     });
+
 });

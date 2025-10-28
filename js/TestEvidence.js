@@ -277,14 +277,8 @@ async function generarTestEvidence(data) {
                     // Leer contenido del archivo
                     const text = await file.text();
 
-                    // Truncado
-                    const maxChars = 1500;
-                    let displayed = text;
-                    let truncated = false;
-                    if (text.length > maxChars) {
-                        displayed = text.slice(0, maxChars) + '\n\n... (Archivo Muy largo, ver completo en el ZIP)';
-                        truncated = true;
-                    }
+                    // Sin truncado: incluir contenido completo del script
+                    const displayed = text;
 
                     // Añadir el encabezado de sección solo una vez
                     if (!addedSectionHeading) {
@@ -297,13 +291,101 @@ async function generarTestEvidence(data) {
                         heading: HeadingLevel.HEADING_3,
                         children: [new TextRun({ text: name, bold: true, size: 20, font: 'Calibri' })]
                     });
+                    // Imagen asociada (si existe) basada en el nombre del archivo en ./img/
+                    let imagePara = null;
+                    try {
+                        const base = name.replace(/\.[^\.]+$/, '');
+                        const candidates = [
+                            `./img/${base}.png`,
+                            `./img/${base}.jpg`,
+                            `./img/${base}.jpeg`,
+                            `./img/${base}.webp`
+                        ];
+                        let buf = null;
+                        for (const url of candidates) {
+                            try {
+                                const r = await fetch(url);
+                                if (r.ok) { buf = await r.arrayBuffer(); break; }
+                            } catch (_) {}
+                        }
+                        if (buf) {
+                            imagePara = new Paragraph({
+                                children: [new ImageRun({ data: buf, transformation: { width: 520, height: 300 } })],
+                                alignment: AlignmentType.CENTER,
+                                spacing: { after: 120 }
+                            });
+                        }
+                    } catch (_) { /* noop */ }
 
-                    // Bloque de código: recuadro sombreado con monoespaciada y saltos de línea preservados
+                    // Bloque de código con resaltado SQL básico
                     const codeRuns = [];
+                    const keywordColor = '0000AA'; // azul
+                    const stringColor = 'AA5500'; // marrón
+                    const numberColor = 'AA00AA'; // púrpura
+                    const commentColor = '008000'; // verde
+                    const keywords = [
+                        'select','from','where','and','or','not','insert','into','values','update','set','delete','create','table','view','procedure','function','package','begin','end','declare','as','is','join','left','right','inner','outer','on','group','by','order','having','limit','offset','union','all','distinct','case','when','then','else','null','like','in','exists','between','return','returns'
+                    ];
+                    const kwRegex = new RegExp('^(' + keywords.join('|') + ')$','i');
+
+                    function tokenizeLine(line) {
+                        const tokens = [];
+                        let i = 0;
+                        // Handle line comment -- ...
+                        const commentIdx = line.indexOf('--');
+                        let work = line;
+                        let comment = '';
+                        if (commentIdx >= 0) {
+                            work = line.slice(0, commentIdx);
+                            comment = line.slice(commentIdx);
+                        }
+                        // Tokenize strings and others
+                        while (i < work.length) {
+                            const ch = work[i];
+                            if (ch === '\'') {
+                                let j = i + 1;
+                                while (j < work.length) {
+                                    if (work[j] === '\'' && work[j+1] === '\'') { j += 2; continue; }
+                                    if (work[j] === '\'') { j++; break; }
+                                    j++;
+                                }
+                                tokens.push({ text: work.slice(i, j), color: stringColor });
+                                i = j;
+                                continue;
+                            }
+                            // numbers
+                            if (/[0-9]/.test(ch)) {
+                                let j = i+1;
+                                while (j < work.length && /[0-9_.]/.test(work[j])) j++;
+                                tokens.push({ text: work.slice(i, j), color: numberColor });
+                                i = j;
+                                continue;
+                            }
+                            // word/identifier
+                            if (/[A-Za-z_]/.test(ch)) {
+                                let j = i+1;
+                                while (j < work.length && /[A-Za-z0-9_]/.test(work[j])) j++;
+                                const word = work.slice(i, j);
+                                if (kwRegex.test(word)) tokens.push({ text: word, color: keywordColor, bold: true });
+                                else tokens.push({ text: word, color: '000000' });
+                                i = j;
+                                continue;
+                            }
+                            // single char
+                            tokens.push({ text: ch, color: '000000' });
+                            i++;
+                        }
+                        if (comment) tokens.push({ text: comment, color: commentColor, italics: true });
+                        return tokens;
+                    }
+
                     const lines = displayed.split('\n');
                     lines.forEach((line, idx) => {
                         if (idx > 0) codeRuns.push(new TextRun({ break: 1 }));
-                        codeRuns.push(new TextRun({ text: line, font: 'Courier New', size: 18 }));
+                        const toks = tokenizeLine(line);
+                        toks.forEach(t => {
+                            codeRuns.push(new TextRun({ text: t.text, font: 'Courier New', size: 18, bold: !!t.bold, color: t.color, italics: !!t.italics }));
+                        });
                     });
 
                     const codeParagraph = new Paragraph({ children: codeRuns, alignment: AlignmentType.LEFT });
@@ -331,10 +413,10 @@ async function generarTestEvidence(data) {
                     });
 
                     paragraphs.push(headingParagraph);
+                    if (imagePara) paragraphs.push(imagePara);
                     paragraphs.push(codeBox);
-                    if (truncated) {
-                        paragraphs.push(new Paragraph({ children: [new TextRun({ text: 'Archivo truncado en el documento. Archivo completo incluido en el ZIP.', italics: true, size: 12, font: 'Calibri' })], spacing: { after: 100 } }));
-                    }
+                    // Espacio adicional entre scripts
+                    paragraphs.push(new Paragraph({ text: ' ', spacing: { after: 300 } }));
                 } catch (e) {
                     paragraphs.push(new Paragraph({ children: [new TextRun({ text: `Error leyendo ${name}: ${String(e)}`, size: 12, font: 'Calibri' })], spacing: { after: 100 } }));
                 }
