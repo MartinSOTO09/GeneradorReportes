@@ -1,4 +1,4 @@
-async function generarTestEvidence(data) {
+async function generarTestEvidence_postgres(data) {
     if (typeof docx === 'undefined') {
         throw new Error("La librería docx no está cargada");
     }

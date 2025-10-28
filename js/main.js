@@ -28,6 +28,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             updateDropzoneFiles(e.target.files);
         });
 
+    // Animación de la tarjeta de Información General al cambiar valores relevantes
+    function triggerInfoCardAnim() {
+        try {
+            const infoCard = document.querySelector('section.card:nth-of-type(2)');
+            if (!infoCard) return;
+            infoCard.classList.add('card-change');
+            setTimeout(() => infoCard.classList.remove('card-change'), 420);
+        } catch (_) {}
+    }
+
+    // Escuchar cambios en campos clave de Información General
+    const infoSelectors = ['#solman', '#ticket', '#titulo', '#base_origen', '#esquema_origen', '#base_destino', '#esquemas_destino', '#procedure', '#sistemas'];
+    infoSelectors.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) {
+            el.addEventListener('change', triggerInfoCardAnim);
+            el.addEventListener('input', () => {
+                // limitar frecuencia de animación en input continuo
+                if (!el.__animPending) {
+                    el.__animPending = true;
+                    triggerInfoCardAnim();
+                    setTimeout(() => el.__animPending = false, 600);
+                }
+            });
+        }
+    });
+
         // Drag & drop handlers
         dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -156,10 +183,24 @@ document.addEventListener("DOMContentLoaded", async () => {
             const initial = dbTypeSelect.value || 'oracle';
             applyDbBodyClass(initial);
             applyFieldsForDb(initial);
+            // pequeña animación inicial
+            dbTypeSelect.classList.add('pulse');
+            setTimeout(() => dbTypeSelect.classList.remove('pulse'), 220);
+
+            const dbIcon = document.getElementById('dbIcon');
             dbTypeSelect.addEventListener('change', (e) => {
                 const v = e.target.value || 'oracle';
                 applyDbBodyClass(v);
                 applyFieldsForDb(v);
+                // animación sutil en el select
+                dbTypeSelect.classList.add('pulse');
+                setTimeout(() => dbTypeSelect.classList.remove('pulse'), 220);
+                // animación sutil en el icono
+                if (dbIcon) {
+                    dbIcon.style.transform = 'scale(1.12)';
+                    setTimeout(() => { dbIcon.style.transform = 'scale(1)'; }, 160);
+                }
+                triggerInfoCardAnim();
             });
         }
     } catch (error) {

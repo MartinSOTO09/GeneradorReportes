@@ -324,3 +324,42 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== Select with Icon (DB options) ===== */
+.select-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.db-icon {
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22px 22px;
+  transition: transform 180ms ease, opacity 200ms ease;
+  opacity: 0.95;
+}
+
+/* Use local images as favicons */
+body.db-oracle .db-icon { background-image: url('../img/oracle.png'); }
+body.db-postgres .db-icon { background-image: url('../img/postgres.png'); }
+body.db-linux .db-icon { background-image: url('../img/linux.png'); }
+
+/* Subtle pulse animation for select on change */
+.anim-select { transition: box-shadow 180ms ease, transform 120ms ease; }
+.anim-select.pulse { box-shadow: 0 0 0 3px rgba(74,144,226,0.25); transform: translateY(-1px); }
+
+/* ===== Card change animation ===== */
+@keyframes cardPulse {
+  0% { box-shadow: 0 0 0 0 rgba(74,144,226,0.0); transform: translateY(0); }
+  30% { box-shadow: 0 0 0 6px rgba(74,144,226,0.12); transform: translateY(-1px); }
+  100% { box-shadow: 0 0 0 0 rgba(74,144,226,0.0); transform: translateY(0); }
+}
+
+.card.card-change {
+  animation: cardPulse 420ms ease;
+}
+

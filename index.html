@@ -29,17 +29,21 @@
           <div> <label>Seleccionar Perfil</label> <select id="usuario" required>
               <option value="">Seleccione su perfil</option>
             </select> </div>
-          <div>
-            <label>Tipo de DB</label>
-            <select id="db_type" title="Seleccione el tipo de base de datos">
-              <option value="oracle" selected>Oracle (predefinida)</option>
-              <option value="postgres">Postgres</option>
-              <option value="linux">Linux</option>
-            </select>
-          </div>
           <div> <label>Nombre</label> <input type="text" id="usuario_nombre" placeholder="Auto-completado" readonly>
           </div>
           <div> <label>Email</label> <input type="text" id="usuario_email" placeholder="Auto-completado" readonly>
+          </div>
+
+          <div>
+            <label>Opciones de Reporte</label>
+            <div class="select-with-icon">
+              <i id="dbIcon" class="db-icon" aria-hidden="true"></i>
+              <select id="db_type" title="Seleccione el tipo de base de datos" class="anim-select">
+                <option value="oracle" selected>Oracle (predefinida)</option>
+                <option value="postgres">Postgres</option>
+                <option value="linux">Linux</option>
+              </select>
+            </div>
           </div>
         </div>
       </section> <!-- Información General -->

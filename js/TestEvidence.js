@@ -298,30 +298,32 @@ async function generarTestEvidence(data) {
                         children: [new TextRun({ text: name, bold: true, size: 20, font: 'Calibri' })]
                     });
 
-                    // Ahora la tabla: dar más espacio a la columna de script (15% / 85%) y fuente ligeramente mayor
-                    const tbl = new Table({
+                    // Bloque de código: recuadro sombreado con monoespaciada y saltos de línea preservados
+                    const codeRuns = [];
+                    const lines = displayed.split('\n');
+                    lines.forEach((line, idx) => {
+                        if (idx > 0) codeRuns.push(new TextRun({ break: 1 }));
+                        codeRuns.push(new TextRun({ text: line, font: 'Courier New', size: 18 }));
+                    });
+
+                    const codeParagraph = new Paragraph({ children: codeRuns, alignment: AlignmentType.LEFT });
+
+                    const codeBox = new Table({
                         width: { size: 100, type: WidthType.PERCENTAGE },
                         borders: {
-                            top: { style: BorderStyle.SINGLE, size: 1, color: 'FFFFFF' },
-                            bottom: { style: BorderStyle.SINGLE, size: 1, color: 'FFFFFF' },
-                            left: { style: BorderStyle.SINGLE, size: 1, color: 'FFFFFF' },
-                            right: { style: BorderStyle.SINGLE, size: 1, color: 'FFFFFF' },
-                            insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'FFFFFF' },
-                            insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'FFFFFF' }
+                            top: { style: BorderStyle.SINGLE, size: 1, color: 'cccccc' },
+                            bottom: { style: BorderStyle.SINGLE, size: 1, color: 'cccccc' },
+                            left: { style: BorderStyle.SINGLE, size: 1, color: 'cccccc' },
+                            right: { style: BorderStyle.SINGLE, size: 1, color: 'cccccc' }
                         },
                         rows: [
                             new TableRow({
                                 children: [
                                     new TableCell({
-                                        width: { size: 10, type: WidthType.PERCENTAGE },
-                                        // Evitar duplicación del nombre: mostrar tipo/etiqueta en vez del nombre repetido
-                                        children: [new Paragraph({ children: [new TextRun({ text: 'SQL', bold: true, size: 20, font: 'Calibri' })] })],
-                                        margins: { top: 50, bottom: 50, left: 50, right: 50 }
-                                    }),
-                                    new TableCell({
-                                        width: { size: 90, type: WidthType.PERCENTAGE },
-                                        children: [new Paragraph({ children: [new TextRun({ text: displayed, font: 'Courier New', size: 18 })] })],
-                                        margins: { top: 50, bottom: 50, left: 50, right: 50 }
+                                        width: { size: 100, type: WidthType.PERCENTAGE },
+                                        children: [codeParagraph],
+                                        shading: { fill: 'F7F7F7' },
+                                        margins: { top: 120, bottom: 120, left: 180, right: 180 }
                                     })
                                 ]
                             })
@@ -329,7 +331,7 @@ async function generarTestEvidence(data) {
                     });
 
                     paragraphs.push(headingParagraph);
-                    paragraphs.push(tbl);
+                    paragraphs.push(codeBox);
                     if (truncated) {
                         paragraphs.push(new Paragraph({ children: [new TextRun({ text: 'Archivo truncado en el documento. Archivo completo incluido en el ZIP.', italics: true, size: 12, font: 'Calibri' })], spacing: { after: 100 } }));
                     }

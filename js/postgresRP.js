@@ -1,4 +1,4 @@
-async function generarReleasePlan(data) {
+async function generarReleasePlan_postgres(data) {
     if (typeof docx === 'undefined') {
         throw new Error("La librería docx no está cargada");
     }
