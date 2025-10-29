@@ -148,6 +148,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                         // Cambiar etiqueta asociada al campo según DB
                         const procLabel = proc.parentNode && proc.parentNode.querySelector && proc.parentNode.querySelector('label');
                         const procWrapper = proc.parentElement || proc;
+                        // Containers para reordenar en fila 2
+                        const solicitudCont = document.getElementById('solicitud_container');
+                        const sistemasEl = document.getElementById('sistemas');
+                        const sistemasWrapper = sistemasEl ? (sistemasEl.parentElement || sistemasEl) : null;
+                        const row2 = document.querySelector('.row2');
                         // Postgres: debe ser un link (URL)
                         if (val === 'postgres') {
                             proc.type = 'url';
@@ -155,16 +160,36 @@ document.addEventListener("DOMContentLoaded", async () => {
                             // Ancho mayor para mejor usabilidad
                             proc.style.width = '100%';
                             proc.style.maxWidth = '1000px';
-                            if (procWrapper) procWrapper.style.gridColumn = 'span 2';
+                            // No expandir a 2 columnas en el nuevo orden
+                            if (procWrapper) procWrapper.style.removeProperty('grid-column');
                             if (procLabel) procLabel.textContent = 'Link';
-                        // Linux: debe ser "solicitud(es)", cadena de texto
+                            // Asegurar que el campo procedure esté visible en Postgres
+                            if (procWrapper) procWrapper.style.display = '';
+
+                            // Mostrar Solicitud y reordenar: Solicitud, Sistema, Link
+                            if (solicitudCont) solicitudCont.style.display = '';
+                            if (row2) row2.style.gridTemplateColumns = '200px 200px 1fr';
+                            if (solicitudCont) solicitudCont.style.order = '1';
+                            if (sistemasWrapper) sistemasWrapper.style.order = '2';
+                            if (procWrapper) procWrapper.style.order = '3';
+                        // Linux: solo mostrar Solicitud y Sistema; ocultar el campo de procedure
                         } else if (val === 'linux') {
                             proc.type = 'text';
                             proc.placeholder = 'Solicitud(es)';
                             proc.style.width = '100%';
                             proc.style.maxWidth = '1000px';
-                            if (procWrapper) procWrapper.style.gridColumn = 'span 2';
+                            if (procWrapper) procWrapper.style.removeProperty('grid-column');
                             if (procLabel) procLabel.textContent = 'Solicitud(es)';
+
+                            // Mostrar Solicitud; ocultar procedure; configurar dos columnas
+                            if (solicitudCont) solicitudCont.style.display = '';
+                            if (row2) row2.style.gridTemplateColumns = '200px 200px';
+                            if (solicitudCont) solicitudCont.style.order = '1';
+                            if (sistemasWrapper) sistemasWrapper.style.order = '2';
+                            if (procWrapper) {
+                                procWrapper.style.order = '3';
+                                procWrapper.style.display = 'none';
+                            }
                         // Oracle: valor por defecto
                         } else {
                             proc.type = 'text';
@@ -174,6 +199,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                             proc.style.removeProperty('width');
                             if (procWrapper) procWrapper.style.removeProperty('grid-column');
                             if (procLabel) procLabel.textContent = 'Procedure';
+
+                            // Ocultar Solicitud y restaurar orden/plantilla de columnas
+                            const solicitudCont2 = document.getElementById('solicitud_container');
+                            if (solicitudCont2) solicitudCont2.style.display = 'none';
+                            if (row2) row2.style.gridTemplateColumns = '200px 200px 1fr 300px';
+                            // Reset de order para evitar efectos secundarios
+                            if (solicitudCont2) solicitudCont2.style.removeProperty('order');
+                            if (sistemasWrapper) sistemasWrapper.style.removeProperty('order');
+                            if (procWrapper) {
+                                procWrapper.style.removeProperty('order');
+                                // Asegurar que el campo procedure se muestre en Oracle
+                                procWrapper.style.display = '';
+                            }
                         }
                     } catch (_) { /* noop */ }
                 }
@@ -270,6 +308,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Botón Limpiar: limpiar solo cuando el usuario lo decida
+    const btnClear = document.getElementById('btn_clear');
+    if (btnClear) {
+        btnClear.addEventListener('click', (e) => {
+            e.preventDefault();
+            animateClearPreserveUser();
+        });
+    }
+
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -301,6 +348,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             descripcion: document.getElementById("descripcion").value.trim(),
             resultado: document.getElementById("resultado").value.trim(),
             objetivo: document.getElementById("objetivo").value.trim(),
+            solicitud: (document.getElementById('solicitud') ? document.getElementById('solicitud').value.trim() : ''),
             // Use files selected through the dropzone if available, otherwise fall back to the input.files
             respaldos: (typeof selectedFiles !== 'undefined' && selectedFiles) ? selectedFiles : document.getElementById("respaldos").files
                 ,
@@ -329,9 +377,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         await generarZIP(data);
-
-        // Animar la limpieza del formulario conservando el usuario
-        animateClearPreserveUser();
     });
 
 });

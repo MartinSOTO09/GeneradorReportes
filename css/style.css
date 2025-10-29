@@ -307,6 +307,31 @@ textarea {
   background-color: var(--btn-cancel-hover);
 }
 
+/* Specific styling for the Limpiar (Clear) button */
+#btn_clear {
+  background-color: #f0f5f2; /* soft clean tone */
+  color: #1f6f43; /* deep green for clarity */
+  border: 1px solid #cfe6db;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+#btn_clear:hover {
+  background-color: #e6f2ec;
+}
+
+#btn_clear:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 111, 67, 0.18);
+}
+
+#btn_clear::before {
+  content: '🧹';
+  font-size: 1rem;
+  line-height: 1;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 1100px) {
   /* At medium widths stack into two columns to keep readability */

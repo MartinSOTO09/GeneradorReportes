@@ -68,6 +68,10 @@
             <!-- Row 2: Base Origen, Esquema Origen, Procedure, Sistemas -->
             <div class="row2"
               style="display:grid;grid-template-columns:200px 200px 1fr 300px;gap:0.8rem;margin-top:0.8rem;align-items:center">
+              <div id="solicitud_container" style="display:none">
+                <label>Solicitud</label>
+                <input type="text" id="solicitud" placeholder="Número o referencia">
+              </div>
               <div><label>Base Origen</label>
                 <select id="base_origen">
                   <option value="">Seleccione</option>
@@ -607,7 +611,7 @@
     </div>
       </section>
     </div>
-    <div class="form-actions"> <button type="button" class="btn-cancel">Cancelar</button> <button type="submit"
+    <div class="form-actions"> <button type="button" id="btn_clear" class="btn-cancel">Limpiar</button> <button type="submit"
         class="btn-primary">Generar Documento</button> </div>
     </div>
   </form>

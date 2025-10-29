@@ -165,6 +165,79 @@ async function generarReleasePlan_postgres(data) {
             });
         }
 
+        function makeCustomEightColumnTable(rowsDataOrWithWidths, colWidths) {
+            // Permite dos formas de uso:
+            // 1) makeCustomEightColumnTable([ [w1..w8], row1, row2, ... ])  -> un solo arreglo, el primero son los anchos
+            // 2) makeCustomEightColumnTable(rowsData, colWidths)            -> anchos por parámetro separado
+            let rowsData = Array.isArray(rowsDataOrWithWidths) ? [...rowsDataOrWithWidths] : [];
+            let widths = [12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5];
+
+            if (rowsData.length && Array.isArray(rowsData[0]) && rowsData[0].length === 8 && rowsData[0].every(n => typeof n === 'number')) {
+                widths = rowsData.shift();
+            } else if (Array.isArray(colWidths) && colWidths.length === 8) {
+                widths = colWidths;
+            }
+
+            // Helper: insertar puntos de quiebre suaves para URLs o palabras largas
+            const insertSoftWraps = (s) => {
+                if (typeof s !== 'string') return s;
+                // Inserta zero-width space después de delimitadores comunes para permitir corte de línea
+                return s
+                    .replaceAll('/', '/\u200B')
+                    .replaceAll('?', '?\u200B')
+                    .replaceAll('&', '&\u200B')
+                    .replaceAll('=', '=\u200B')
+                    .replaceAll('-', '-\u200B')
+                    .replaceAll('_', '_\u200B');
+            };
+
+            return new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                layout: docx.TableLayoutType.FIXED,
+                rows: rowsData.map((row, rowIndex) =>
+                    new TableRow({
+                        children: row.slice(0, 8).map((cellContent, idx) => {
+                            let contentArray;
+                            if (typeof cellContent === 'string') {
+                                contentArray = cellContent.split('\n').map(line => ({ text: insertSoftWraps(line) }));
+                            } else if (Array.isArray(cellContent)) {
+                                // Aplicar soft wraps a cada item.text si es string
+                                contentArray = cellContent.map(it => ({
+                                    ...it,
+                                    text: typeof it.text === 'string' ? insertSoftWraps(it.text) : it.text
+                                }));
+                            } else {
+                                contentArray = [{ text: String(cellContent ?? '') }];
+                            }
+
+                            const paragraph = new Paragraph({
+                                children: contentArray.flatMap((item, i) => {
+                                    const tr = new TextRun({
+                                        text: item.text,
+                                        font: item.font || 'Calibri',
+                                        size: item.size || 20,
+                                        bold: item.bold || (rowIndex === 0),
+                                        italic: item.italic || false,
+                                        color: item.color || '000000',
+                                        highlight: item.highlight ? String(item.highlight).toLowerCase() : undefined
+                                    });
+                                    return i < contentArray.length - 1 ? [tr, new TextRun({ break: 1 })] : [tr];
+                                }),
+                                alignment: rowIndex === 0 ? AlignmentType.CENTER : AlignmentType.LEFT
+                            });
+
+                            return new TableCell({
+                                width: { size: widths[idx] || 0, type: WidthType.PERCENTAGE },
+                                children: [paragraph],
+                                shading: rowIndex === 0 ? { fill: 'c1d59a' } : undefined,
+                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
+                            });
+                        })
+                    })
+                )
+            });
+        }
+
         // Crear un índice manual en formato de párrafos usando puntos generados manualmente
         // Recibe opcionalmente un array de entradas y un array de números (strings) para la columna derecha
         function makeManualTOC(entriesInput, numbersInput) {
@@ -263,6 +336,22 @@ async function generarReleasePlan_postgres(data) {
                     spacing: { after: 120 }
                 })
             );
+
+            const exampleHeaders = [
+                [{ text: 'H1', bold: true }],
+                [{ text: 'H2', bold: true }],
+                [{ text: 'H3', bold: true }],
+                [{ text: 'H4', bold: true }],
+                [{ text: 'H5', bold: true }],
+                [{ text: 'H6', bold: true }],
+                [{ text: 'H7', bold: true }],
+                [{ text: 'H8', bold: true }]
+            ];
+            const exampleRow = ['V1','V2','V3','V4','V5','V6','V7','V8'];
+            const exampleRowLink = ['Link', data.procedure || '', '', '', '', '', '', ''];
+            const exampleTable = makeCustomEightColumnTable([[10,12,12,14,14,12,12,14], exampleHeaders, exampleRow, exampleRowLink]);
+            sections.push(exampleTable);
+            sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } }));
 
             // -------------------------
             // 2 GENERAL INFORMATION
