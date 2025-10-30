@@ -67,10 +67,18 @@
 
             <!-- Row 2: Base Origen, Esquema Origen, Procedure, Sistemas -->
             <div class="row2"
-              style="display:grid;grid-template-columns:200px 200px 1fr 300px;gap:0.8rem;margin-top:0.8rem;align-items:center">
+              style="display:grid;grid-template-columns:200px 200px 1fr 200px;gap:0.8rem;margin-top:0.8rem;align-items:center">
               <div id="solicitud_container" style="display:none">
                 <label>Solicitud</label>
                 <input type="text" id="solicitud" placeholder="Número o referencia">
+              </div>
+              <div id="link_container" style="display:none">
+                <label>Link</label>
+                <input type="url" id="link" placeholder="https://... o ssh://...">
+              </div>
+              <div id="nombre_solicitud_container" style="display:none">
+                <label>Nombre Solicitud</label>
+                <input type="text" id="nombre_solicitud" placeholder="Nombre descriptivo">
               </div>
               <div><label>Base Origen</label>
                 <select id="base_origen">

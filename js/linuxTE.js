@@ -382,6 +382,23 @@ async function generarTestEvidence_linux(data) {
                 ]
             }),
 
+
+             sections.push(
+                new Paragraph({
+                    children: [new TextRun({ text: 'Test Evidence', font: 'Calibri', size: 32, color: '4F81BD', bold: true })],
+                    spacing: { after: 120 },
+                    alignment: AlignmentType.CENTER
+                })
+            );
+
+            sections.push(
+                new Paragraph({
+                    children: [new TextRun({ text: data.solman + ', ' + data.titulo, font: 'Calibri', size: 32, color: '000000', bold: true, })],
+                    spacing: { after: 320 },
+                    alignment: AlignmentType.CENTER
+                })
+            );
+
              // 1 OVERVIEW
                 // -------------------------
                 sections.push(
@@ -522,15 +539,15 @@ async function generarTestEvidence_linux(data) {
                             new TableCell({
                                 children: [new Paragraph({
                                     children: [
-                                        new TextRun({ text: 'Ejecucion de Script en QA.', size: 20, font: 'Calibri' }),
+                                        new TextRun({ text: 'Ejecucion de la solicitid: ' + data.solicitud + ' - ' + data.nombre_solicitud, size: 20, font: 'Calibri' }),
                                         new TextRun({ break: 1 }),
                                         new TextRun({ text: data.procedure, size: 20, bold: true, font: 'Calibri' })
                                     ]
                                 })],
                                 margins: { top: 75, bottom: 75, left: 75, right: 75 }
                             }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Script', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Ejecutar Script', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
+                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: ' ', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
+                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Ejecución de la solicitud', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
                             new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: data.resultado || '', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } })
                         ]
                     })
@@ -555,45 +572,7 @@ async function generarTestEvidence_linux(data) {
                     shading: { fill: '2E8B57' }
                 })
             );
-            sections.push(
-                new Paragraph({
-                    children: [new TextRun({ text: 'Se ejecuta el script en QA.', font: 'Calibri', size: 20 })],
-                    spacing: { after: 120 }
-                })
-            );
 
-            sections.push(
-                new Paragraph({
-                    children: [new TextRun({ text: data.procedure, font: 'Calibri', size: 20 })],
-                    spacing: { after: 120 }
-                })
-            );
-
-            const testT = [
-                ['Test Type', 'X', 'Justification of Excluded Tests / Test Results'],
-                ['Data and DB Integrity Test', ' ', ' '],
-                ['Business Cycle Test', ' ', ' '],
-                ['User Interface Test', ' ', ' '],
-                ['Performance Test', ' ', ' '],
-                ['Load Test', ' ', ' '],
-                ['Stress Test', ' ', ' '],
-                ['Volume Test', ' ', ' '],
-                ['Access Security and Control', ' ', ' '],
-                ['Failure Recovery Test', ' ', ' '],
-                ['Configuration Test', ' ', ' '],
-                ['Installation Test', ' ', ' '],
-                ['Regression Test', ' ', ' ']
-            ];
-            sections.push(makeStyledDynamicTable(testT));
-            sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
-
-            const other = [
-                ['Other Test Included', 'Justification'],
-                [' ', ' '],
-                [' ', ' '],
-                [' ', ' ']
-            ];
-            sections.push(makeStyledDynamicTable(other));
             sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
 
 
@@ -924,7 +903,7 @@ async function generarTestEvidence_linux(data) {
 
                         // Subtítulos
                         new Paragraph({
-                            children: [new TextRun({ text: 'LINUX Evidence', size: 48, font: 'Calibri' })],
+                            children: [new TextRun({ text: 'Test Evidence', size: 48, font: 'Calibri' })],
                             alignment: AlignmentType.CENTER,
                             spacing: { after: 1100 }
                         }),

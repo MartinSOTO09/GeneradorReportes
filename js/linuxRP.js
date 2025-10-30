@@ -3,7 +3,7 @@ async function generarReleasePlan_linux(data) {
         throw new Error("La librería docx no está cargada");
     }
 
-    const { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Table, TableRow, TableCell, WidthType, ImageRun, BorderStyle, PageBreak, TableOfContents, HeadingLevel } = docx;
+    const { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Table, TableRow, TableCell, WidthType, ImageRun, BorderStyle, PageBreak, TableOfContents, HeadingLevel, UnderlineType } = docx;
 
     try {
         // Cargar imagen como ArrayBuffer
@@ -165,6 +165,87 @@ async function generarReleasePlan_linux(data) {
             });
         }
 
+        function makeCustomEightColumnTable(rowsDataOrWithWidths, colWidths, centerRows) {
+            // Permite dos formas de uso:
+            // 1) makeCustomEightColumnTable([ [w1..w8], row1, row2, ... ])  -> un solo arreglo, el primero son los anchos
+            // 2) makeCustomEightColumnTable(rowsData, colWidths)            -> anchos por parámetro separado
+            let rowsData = Array.isArray(rowsDataOrWithWidths) ? [...rowsDataOrWithWidths] : [];
+            let widths = [12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5];
+
+            if (rowsData.length && Array.isArray(rowsData[0]) && rowsData[0].length === 8 && rowsData[0].every(n => typeof n === 'number')) {
+                widths = rowsData.shift();
+            } else if (Array.isArray(colWidths) && colWidths.length === 8) {
+                widths = colWidths;
+            }
+
+            // Helper: insertar puntos de quiebre suaves para URLs o palabras largas
+            const insertSoftWraps = (s) => {
+                if (typeof s !== 'string') return s;
+                // Inserta zero-width space después de delimitadores comunes para permitir corte de línea
+                return s
+                    .replaceAll('/', '/\u200B')
+                    .replaceAll('?', '?\u200B')
+                    .replaceAll('&', '&\u200B')
+                    .replaceAll('=', '=\u200B')
+                    .replaceAll('-', '-\u200B')
+                    .replaceAll('_', '_\u200B');
+            };
+
+            return new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                layout: docx.TableLayoutType.FIXED,
+                rows: rowsData.map((row, rowIndex) =>
+                    new TableRow({
+                        children: row.slice(0, 8).map((cellContent, idx) => {
+                            let contentArray;
+                            if (typeof cellContent === 'string') {
+                                contentArray = cellContent.split('\n').map(line => ({ text: insertSoftWraps(line) }));
+                            } else if (Array.isArray(cellContent)) {
+                                // Aplicar soft wraps a cada item.text si es string
+                                contentArray = cellContent.map(it => ({
+                                    ...it,
+                                    text: typeof it.text === 'string' ? insertSoftWraps(it.text) : it.text
+                                }));
+                            } else if (cellContent && typeof cellContent === 'object') {
+                                // Permitir un único objeto { text, ... }
+                                const it = cellContent;
+                                contentArray = [{
+                                    ...it,
+                                    text: typeof it.text === 'string' ? insertSoftWraps(it.text) : it.text
+                                }];
+                            } else {
+                                contentArray = [{ text: '' }];
+                            }
+
+                            const paragraph = new Paragraph({
+                                children: contentArray.flatMap((item, i) => {
+                                    const tr = new TextRun({
+                                        text: item.text,
+                                        font: item.font || 'Calibri',
+                                        size: item.size || 20,
+                                        bold: item.bold || (rowIndex === 0),
+                                        italic: item.italic || false,
+                                        color: item.color || '000000',
+                                        highlight: item.highlight ? String(item.highlight).toLowerCase() : undefined,
+                                        underline: item.underline
+                                    });
+                                    return i < contentArray.length - 1 ? [tr, new TextRun({ break: 1 })] : [tr];
+                                }),
+                                alignment: centerRows ? AlignmentType.CENTER : (rowIndex === 0 ? AlignmentType.CENTER : AlignmentType.LEFT)
+                            });
+
+                            return new TableCell({
+                                width: { size: widths[idx] || 0, type: WidthType.PERCENTAGE },
+                                children: [paragraph],
+                                shading: rowIndex === 0 ? { fill: 'c1d59a' } : undefined,
+                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
+                            });
+                        })
+                    })
+                )
+            });
+        }
+
         // Crear un índice manual en formato de párrafos usando puntos generados manualmente
         // Recibe opcionalmente un array de entradas y un array de números (strings) para la columna derecha
         function makeManualTOC(entriesInput, numbersInput) {
@@ -184,7 +265,7 @@ async function generarReleasePlan_linux(data) {
                 '5.4.2  Cross Reference'
             ];
 
-            const numbers = numbersInput || ['3','3','4','4','5','5','5','6','6','7','7','7','7'];
+            const numbers = numbersInput || ['3', '3', '4', '4', '5', '5', '5', '6', '6', '7', '7', '7', '7'];
 
             // Longitud objetivo aproximada en caracteres para la línea completa (ajustable)
             // Aumentado para que los puntos lleguen más cerca del margen derecho
@@ -232,7 +313,7 @@ async function generarReleasePlan_linux(data) {
                 })
             );
 
-            
+
             sections.push(new Paragraph({ text: ' ', spacing: { after: 80 } }));
 
 
@@ -305,9 +386,9 @@ async function generarReleasePlan_linux(data) {
 
             const rolesTableData = [
                 ['Rol', 'Responsibilities - Activities to Carry Out'],
-                ['Technical Project Leader', 'Benjamin Martinez'],
+                ['Technical Project Leader', 'IT L2 Industrial Support Coordination <IT.L2.INDSC@tenaris.com>'],
                 ['User Leader', ''],
-                ['Project Leader', ''],
+                ['Project Leader', 'IT L2 Industrial Support Coordination <IT.L2.INDSC@tenaris.com>'],
                 ['Technical Analyst', info.usuario.nombre],
                 ['Technologist', 'Grupo de Implementadores']
             ];
@@ -338,6 +419,7 @@ async function generarReleasePlan_linux(data) {
                 })
             );
 
+
             // Function to create a TextRun for a checkbox option
             const makeCheckboxRun = (text, isChecked) => {
                 // Crear dos TextRuns separados: uno para el texto y otro para la marca
@@ -348,7 +430,7 @@ async function generarReleasePlan_linux(data) {
                     color: '000000',
                     highlight: isChecked ? 'yellow' : undefined
                 });
-                
+
                 const checkboxRun = new TextRun({
                     text: isChecked ? ' [X]' : ' [ ]',
                     font: 'Calibri',
@@ -356,7 +438,7 @@ async function generarReleasePlan_linux(data) {
                     color: '000000',
                     highlight: isChecked ? 'yellow' : undefined
                 });
-                
+
                 return [textRun, checkboxRun];
             };
 
@@ -380,11 +462,11 @@ async function generarReleasePlan_linux(data) {
                 if (i > 0) {
                     checkmarkRuns.push(new TextRun({ text: '   ', font: 'Calibri', size: 24 }));
                 }
-                
+
                 // Verificar si el checkbox está marcado (usando el valor exacto como está en el HTML)
-                const isChecked = Array.isArray(data.checkmarks) && data.checkmarks.includes(box.text);
+                const isChecked = box.text === 'HOST' ? true : (Array.isArray(data.checkmarks) && data.checkmarks.includes(box.text));
                 console.log(`Checkbox ${box.text}: ${isChecked}`); // Debug
-                
+
                 // Crear los TextRuns para el texto y el checkbox
                 const runs = makeCheckboxRun(box.text, isChecked);
                 checkmarkRuns.push(...runs);
@@ -393,6 +475,13 @@ async function generarReleasePlan_linux(data) {
             sections.push(
                 new Paragraph({
                     children: checkmarkRuns,
+                    spacing: { after: 160 }
+                })
+            );
+
+            sections.push(
+                new Paragraph({
+                    children: [new TextRun({ text: 'Other (specify):', font: 'Calibri', size: 20 })],
                     spacing: { after: 160 }
                 })
             );
@@ -428,9 +517,6 @@ async function generarReleasePlan_linux(data) {
             sections.push(makeStyledDynamicTable(scenarios));
             sections.push(new Paragraph({ text: ' ', spacing: { after: 370 } })); // Espacio después de la tabla
 
-
-            // Salto de página antes de 4.4
-            sections.push(new Paragraph({ children: [new PageBreak()] }));
             sections.push(
                 new Paragraph({
                     heading: HeadingLevel.HEADING_2,
@@ -444,21 +530,10 @@ async function generarReleasePlan_linux(data) {
                 [
                     'SW01',
                     'SW',
-                    'Oracle',
-                    'Oasis/Menu2K',
-                    [
-                        { text: 'Ejecutar el siguiente procedimiento con Menu2k: ' },
-                        { text: ' ' },
-                        { text: data.procedure, size: 22, bold: true },
-                        { text: 'Origin Database: ' + data.base_origen },
-                        { text: 'Origin Schema: ' + data.esquema_origen },
-                        { text: 'Target Database: ' + data.base_destino },
-                        { text: 'Target Schema: ' + data.esquema_destino },
-                        { text: 'Reason: ' + data.ticket + ' Urgent Change: ' + data.solman },
-                        { text: ' ' },
-                        { text: 'Email: ' + info.usuario.email }
-                    ],
-                    data.ticket
+                    '',
+                    '',
+                    '',
+                    ''
                 ]
 
             ];
@@ -569,6 +644,7 @@ async function generarReleasePlan_linux(data) {
                 })
             );
 
+            sections.push(new Paragraph({ children: [new PageBreak()] }));
             // -------------------------
             // 6 EXECUTION PLAN
             // -------------------------
@@ -581,12 +657,42 @@ async function generarReleasePlan_linux(data) {
                 })
             );
 
-            const executionPlan = [
-                ['Action – Activity', 'Sequence Number', 'Responsible Person', 'Suggested Implementation', 'Dependent components', 'ITDS Mandatory Considerations', 'ITDS Suggested Considerations', 'Status'],
-                ['SW01', '1', [{ text: 'GI', highlight: 'Yellow' }], 'ASAP', '', '', '', [{ text: '[PENDIENTE]', highlight: 'Yellow' }]]
+            const exampleHeaders = [
+                [{ text: 'Action – Activity', bold: true }],
+                [{ text: 'Sequence Number', bold: true }],
+                [{ text: 'Responsible Person', bold: true }],
+                [{ text: 'Suggested Implementation Time', bold: true }],
+                [{ text: 'Dependent components', bold: true }],
+                [{ text: 'ITDS Mandatory Considerations', bold: true }],
+                [{ text: 'ITDS Suggested Considerations', bold: true }],
+                [{ text: 'Status', bold: true }]
             ];
-            sections.push(makeStyledDynamicTable(executionPlan));
-            sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
+            const exampleRow = [[{ text: 'Autorizar la solicitud' },
+            { text: ' ' },
+            { text: 'Tamsa: ' + data.solicitud + ' - ' + data.nombre_solicitud, bold: true },
+            { text: ' ' },
+            { text: 'desde el comando APT - Soporte' }
+            ], '1',
+            [{ text: 'MARTINEZ R. Benjamin F.' },
+            { text: ' ' },
+            { text: 'TENARIS IT ' },
+            { text: 'bfmartinezr@tenaris.com' },
+            { text: ' ' },
+            { text: 'DIAZ Angelica TENARIS' },
+            { text: 'ADIAZ@tenaris.com' }
+            ], 'ASAP', ' ', ' ', ' ', { text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
+
+
+            const exampleRow2 = [[{ text: 'Ejecución de la solicitud ' },
+            { text: 'Tamsa: ' + data.solicitud + ' - ' + data.nombre_solicitud, bold: true }
+            ], '2', [{ text: info.usuario.nombre },
+            { text: info.usuario.email }
+            ], 'ASAP', ' ', ' ', ' ', { text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
+
+
+            const exampleTable = makeCustomEightColumnTable([[24, 9, 21, 11, 9, 9, 8, 10], exampleHeaders, exampleRow, exampleRow2], undefined, true);
+            sections.push(exampleTable);
+            sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } }));
 
             // -------------------------
             // 7 COMMENTS
@@ -675,7 +781,7 @@ async function generarReleasePlan_linux(data) {
 
                         // Subtítulos
                         new Paragraph({
-                            children: [new TextRun({ text: 'LINUX', size: 48, font: 'Calibri' })],
+                            children: [new TextRun({ text: 'Release Plan', size: 48, font: 'Calibri' })],
                             alignment: AlignmentType.CENTER,
                             spacing: { after: 1100 }
                         }),
@@ -719,7 +825,7 @@ async function generarReleasePlan_linux(data) {
                         ...makeManualTOC(
                             ['1 OVERVIEW', '2 GENERAL INFORMATION', '3 IMPLEMENTATION PARTICIPANTS', '4 CHANGES TO APPLY', '5 OBJECTS TO DEPLOY', '6 EXECUTION PLAN', '7 COMMENTS', '8 REVISION HISTORY'],
                             // Números fijos (puedes ajustarlos según el documento final)
-                            ['1','2','3','4','5','6','7','8']
+                            ['1', '2', '3', '4', '5', '6', '7', '8']
                         ),
                         // Salto de página para empezar las secciones en la siguiente
                         new Paragraph({ children: [new PageBreak()] })

@@ -141,37 +141,55 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (!hideForExternal) chkRow.style.display = 'flex';
                 }
 
-                // Ajustar el campo procedure
+                // Ajustar campos por tipo: procedure (Oracle), link (Postgres)
                 const proc = document.getElementById('procedure');
+                const linkInput = document.getElementById('link');
                 if (proc) {
                     try {
                         // Cambiar etiqueta asociada al campo según DB
                         const procLabel = proc.parentNode && proc.parentNode.querySelector && proc.parentNode.querySelector('label');
                         const procWrapper = proc.parentElement || proc;
+                        const linkWrapper = linkInput ? (linkInput.parentElement || linkInput) : null;
+                        const linkLabel = linkWrapper && linkWrapper.querySelector ? linkWrapper.querySelector('label') : null;
                         // Containers para reordenar en fila 2
                         const solicitudCont = document.getElementById('solicitud_container');
+                        const nombreSolicitudCont = document.getElementById('nombre_solicitud_container');
                         const sistemasEl = document.getElementById('sistemas');
                         const sistemasWrapper = sistemasEl ? (sistemasEl.parentElement || sistemasEl) : null;
                         const row2 = document.querySelector('.row2');
-                        // Postgres: debe ser un link (URL)
+                        // Postgres: usar campo Link dedicado y ocultar Procedure
                         if (val === 'postgres') {
-                            proc.type = 'url';
-                            proc.placeholder = 'Pega aquí el enlace (ej: https://... o ssh://...)';
-                            // Ancho mayor para mejor usabilidad
-                            proc.style.width = '100%';
-                            proc.style.maxWidth = '1000px';
-                            // No expandir a 2 columnas en el nuevo orden
-                            if (procWrapper) procWrapper.style.removeProperty('grid-column');
-                            if (procLabel) procLabel.textContent = 'Link';
-                            // Asegurar que el campo procedure esté visible en Postgres
-                            if (procWrapper) procWrapper.style.display = '';
+                            // Ocultar y des-requerir Procedure
+                            proc.required = false;
+                            if (procWrapper) {
+                                procWrapper.style.display = 'none';
+                                procWrapper.style.removeProperty('order');
+                            }
+                            // Configurar Link
+                            if (linkInput) {
+                                linkInput.type = 'url';
+                                linkInput.placeholder = 'Pega aquí el enlace (ej: https://... o ssh://...)';
+                                linkInput.style.width = '100%';
+                                linkInput.style.maxWidth = '1000px';
+                                linkInput.required = true;
+                            }
+                            if (linkWrapper) {
+                                linkWrapper.style.display = '';
+                                linkWrapper.style.removeProperty('grid-column');
+                                linkWrapper.style.order = '3';
+                            }
+                            if (linkLabel) linkLabel.textContent = 'Link';
 
-                            // Mostrar Solicitud y reordenar: Solicitud, Sistema, Link
+                            // Mostrar Solicitud y reordenar: Solicitud, Sistema, Link (Link más ancho)
                             if (solicitudCont) solicitudCont.style.display = '';
                             if (row2) row2.style.gridTemplateColumns = '200px 200px 1fr';
                             if (solicitudCont) solicitudCont.style.order = '1';
                             if (sistemasWrapper) sistemasWrapper.style.order = '2';
-                            if (procWrapper) procWrapper.style.order = '3';
+                            // Ocultar el campo Nombre Solicitud en Postgres
+                            if (nombreSolicitudCont) {
+                                nombreSolicitudCont.style.display = 'none';
+                                nombreSolicitudCont.style.removeProperty('order');
+                            }
                         // Linux: solo mostrar Solicitud y Sistema; ocultar el campo de procedure
                         } else if (val === 'linux') {
                             proc.type = 'text';
@@ -180,12 +198,22 @@ document.addEventListener("DOMContentLoaded", async () => {
                             proc.style.maxWidth = '1000px';
                             if (procWrapper) procWrapper.style.removeProperty('grid-column');
                             if (procLabel) procLabel.textContent = 'Solicitud(es)';
+                            // En Linux ocultamos el campo procedure; debe NO ser requerido para no bloquear la validación nativa
+                            proc.required = false;
+                            // Ocultar Link en Linux
+                            if (linkWrapper) {
+                                linkWrapper.style.display = 'none';
+                                linkWrapper.style.removeProperty('order');
+                            }
+                            if (linkInput) linkInput.required = false;
 
-                            // Mostrar Solicitud; ocultar procedure; configurar dos columnas
+                            // Mostrar Solicitud y Nombre Solicitud; ocultar procedure; configurar tres columnas
                             if (solicitudCont) solicitudCont.style.display = '';
-                            if (row2) row2.style.gridTemplateColumns = '200px 200px';
+                            if (nombreSolicitudCont) nombreSolicitudCont.style.display = '';
+                            if (row2) row2.style.gridTemplateColumns = '200px 200px 200px';
                             if (solicitudCont) solicitudCont.style.order = '1';
-                            if (sistemasWrapper) sistemasWrapper.style.order = '2';
+                            if (nombreSolicitudCont) nombreSolicitudCont.style.order = '2';
+                            if (sistemasWrapper) sistemasWrapper.style.order = '3';
                             if (procWrapper) {
                                 procWrapper.style.order = '3';
                                 procWrapper.style.display = 'none';
@@ -199,11 +227,23 @@ document.addEventListener("DOMContentLoaded", async () => {
                             proc.style.removeProperty('width');
                             if (procWrapper) procWrapper.style.removeProperty('grid-column');
                             if (procLabel) procLabel.textContent = 'Procedure';
+                            // En Oracle el campo procedure vuelve a ser requerido
+                            proc.required = true;
+                            // Ocultar Link en Oracle
+                            if (linkWrapper) {
+                                linkWrapper.style.display = 'none';
+                                linkWrapper.style.removeProperty('order');
+                            }
+                            if (linkInput) linkInput.required = false;
 
                             // Ocultar Solicitud y restaurar orden/plantilla de columnas
                             const solicitudCont2 = document.getElementById('solicitud_container');
                             if (solicitudCont2) solicitudCont2.style.display = 'none';
-                            if (row2) row2.style.gridTemplateColumns = '200px 200px 1fr 300px';
+                            if (nombreSolicitudCont) {
+                                nombreSolicitudCont.style.display = 'none';
+                                nombreSolicitudCont.style.removeProperty('order');
+                            }
+                            if (row2) row2.style.gridTemplateColumns = '200px 200px 1fr 200px';
                             // Reset de order para evitar efectos secundarios
                             if (solicitudCont2) solicitudCont2.style.removeProperty('order');
                             if (sistemasWrapper) sistemasWrapper.style.removeProperty('order');
@@ -349,11 +389,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             resultado: document.getElementById("resultado").value.trim(),
             objetivo: document.getElementById("objetivo").value.trim(),
             solicitud: (document.getElementById('solicitud') ? document.getElementById('solicitud').value.trim() : ''),
+            nombre_solicitud: (document.getElementById('nombre_solicitud') ? document.getElementById('nombre_solicitud').value.trim() : ''),
+            link: (document.getElementById('link') ? document.getElementById('link').value.trim() : ''),
             // Use files selected through the dropzone if available, otherwise fall back to the input.files
             respaldos: (typeof selectedFiles !== 'undefined' && selectedFiles) ? selectedFiles : document.getElementById("respaldos").files
                 ,
             db_type: dbTypeValue,
         };
+
+        // Compatibilidad: en Postgres, mapear link -> procedure para los generadores existentes
+        if (data.db_type === 'postgres') {
+            data.procedure = data.link;
+        }
 
         if (!data.usuario.id) {
             alert("Debes seleccionar un usuario.");

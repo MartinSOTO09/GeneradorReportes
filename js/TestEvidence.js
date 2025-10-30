@@ -466,6 +466,22 @@ async function generarTestEvidence(data) {
                 ]
             }),
 
+            sections.push(
+                new Paragraph({
+                    children: [new TextRun({ text: 'Test Evidence', font: 'Calibri', size: 32, color: '4F81BD', bold: true })],
+                    spacing: { after: 120 },
+                    alignment: AlignmentType.CENTER
+                })
+            );
+
+            sections.push(
+                new Paragraph({
+                    children: [new TextRun({ text: data.solman + ', ' + data.titulo, font: 'Calibri', size: 32, color: '000000', bold: true, })],
+                    spacing: { after: 320 },
+                    alignment: AlignmentType.CENTER
+                })
+            );
+
              // 1 OVERVIEW
                 // -------------------------
                 sections.push(
@@ -921,7 +937,7 @@ async function generarTestEvidence(data) {
             sections.push(                
                 new Paragraph({
                 children: [new TextRun({ text: ' ', font: 'Calibri', size: 16 })],
-                spacing: { after: 120 }
+                spacing: { after: 220 }
             })
             );
 

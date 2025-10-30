@@ -3,7 +3,7 @@ async function generarReleasePlan_postgres(data) {
         throw new Error("La librería docx no está cargada");
     }
 
-    const { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Table, TableRow, TableCell, WidthType, ImageRun, BorderStyle, PageBreak, TableOfContents, HeadingLevel } = docx;
+    const { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Table, TableRow, TableCell, WidthType, ImageRun, BorderStyle, PageBreak, TableOfContents, HeadingLevel, UnderlineType } = docx;
 
     try {
         // Cargar imagen como ArrayBuffer
@@ -165,7 +165,7 @@ async function generarReleasePlan_postgres(data) {
             });
         }
 
-        function makeCustomEightColumnTable(rowsDataOrWithWidths, colWidths) {
+        function makeCustomEightColumnTable(rowsDataOrWithWidths, colWidths, centerRows) {
             // Permite dos formas de uso:
             // 1) makeCustomEightColumnTable([ [w1..w8], row1, row2, ... ])  -> un solo arreglo, el primero son los anchos
             // 2) makeCustomEightColumnTable(rowsData, colWidths)            -> anchos por parámetro separado
@@ -206,8 +206,15 @@ async function generarReleasePlan_postgres(data) {
                                     ...it,
                                     text: typeof it.text === 'string' ? insertSoftWraps(it.text) : it.text
                                 }));
+                            } else if (cellContent && typeof cellContent === 'object') {
+                                // Permitir un único objeto { text, ... }
+                                const it = cellContent;
+                                contentArray = [{
+                                    ...it,
+                                    text: typeof it.text === 'string' ? insertSoftWraps(it.text) : it.text
+                                }];
                             } else {
-                                contentArray = [{ text: String(cellContent ?? '') }];
+                                contentArray = [{ text: '' }];
                             }
 
                             const paragraph = new Paragraph({
@@ -219,11 +226,12 @@ async function generarReleasePlan_postgres(data) {
                                         bold: item.bold || (rowIndex === 0),
                                         italic: item.italic || false,
                                         color: item.color || '000000',
-                                        highlight: item.highlight ? String(item.highlight).toLowerCase() : undefined
+                                        highlight: item.highlight ? String(item.highlight).toLowerCase() : undefined,
+                                        underline: item.underline
                                     });
                                     return i < contentArray.length - 1 ? [tr, new TextRun({ break: 1 })] : [tr];
                                 }),
-                                alignment: rowIndex === 0 ? AlignmentType.CENTER : AlignmentType.LEFT
+                                alignment: centerRows ? AlignmentType.CENTER : (rowIndex === 0 ? AlignmentType.CENTER : AlignmentType.LEFT)
                             });
 
                             return new TableCell({
@@ -337,22 +345,6 @@ async function generarReleasePlan_postgres(data) {
                 })
             );
 
-            const exampleHeaders = [
-                [{ text: 'H1', bold: true }],
-                [{ text: 'H2', bold: true }],
-                [{ text: 'H3', bold: true }],
-                [{ text: 'H4', bold: true }],
-                [{ text: 'H5', bold: true }],
-                [{ text: 'H6', bold: true }],
-                [{ text: 'H7', bold: true }],
-                [{ text: 'H8', bold: true }]
-            ];
-            const exampleRow = ['V1','V2','V3','V4','V5','V6','V7','V8'];
-            const exampleRowLink = ['Link', data.procedure || '', '', '', '', '', '', ''];
-            const exampleTable = makeCustomEightColumnTable([[10,12,12,14,14,12,12,14], exampleHeaders, exampleRow, exampleRowLink]);
-            sections.push(exampleTable);
-            sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } }));
-
             // -------------------------
             // 2 GENERAL INFORMATION
             // -------------------------
@@ -394,9 +386,9 @@ async function generarReleasePlan_postgres(data) {
 
             const rolesTableData = [
                 ['Rol', 'Responsibilities - Activities to Carry Out'],
-                ['Technical Project Leader', 'Benjamin Martinez'],
+                ['Technical Project Leader', 'IT L2 Industrial Support Coordination <IT.L2.INDSC@tenaris.com>'],
                 ['User Leader', ''],
-                ['Project Leader', ''],
+                ['Project Leader', 'IT L2 Industrial Support Coordination <IT.L2.INDSC@tenaris.com>'],
                 ['Technical Analyst', info.usuario.nombre],
                 ['Technologist', 'Grupo de Implementadores']
             ];
@@ -426,6 +418,7 @@ async function generarReleasePlan_postgres(data) {
                     spacing: { after: 160 }
                 })
             );
+
 
             // Function to create a TextRun for a checkbox option
             const makeCheckboxRun = (text, isChecked) => {
@@ -488,6 +481,13 @@ async function generarReleasePlan_postgres(data) {
 
             sections.push(
                 new Paragraph({
+                    children: [new TextRun({ text: 'Other (specify): PostgreSQL', font: 'Calibri', size: 20 })],
+                    spacing: { after: 160 }
+                })
+            );
+
+            sections.push(
+                new Paragraph({
                     heading: HeadingLevel.HEADING_2,
                     children: [new TextRun({ text: '4.2 AFFECTED SYSTEMS', font: 'Calibri', size: 24, bold: true, color: '000000' })],
                     spacing: { after: 160 }
@@ -517,9 +517,6 @@ async function generarReleasePlan_postgres(data) {
             sections.push(makeStyledDynamicTable(scenarios));
             sections.push(new Paragraph({ text: ' ', spacing: { after: 370 } })); // Espacio después de la tabla
 
-
-            // Salto de página antes de 4.4
-            sections.push(new Paragraph({ children: [new PageBreak()] }));
             sections.push(
                 new Paragraph({
                     heading: HeadingLevel.HEADING_2,
@@ -533,21 +530,10 @@ async function generarReleasePlan_postgres(data) {
                 [
                     'SW01',
                     'SW',
-                    'Oracle',
-                    'Oasis/Menu2K',
-                    [
-                        { text: 'Ejecutar el siguiente procedimiento con Menu2k: ' },
-                        { text: ' ' },
-                        { text: data.procedure, size: 22, bold: true },
-                        { text: 'Origin Database: ' + data.base_origen },
-                        { text: 'Origin Schema: ' + data.esquema_origen },
-                        { text: 'Target Database: ' + data.base_destino },
-                        { text: 'Target Schema: ' + data.esquema_destino },
-                        { text: 'Reason: ' + data.ticket + ' Urgent Change: ' + data.solman },
-                        { text: ' ' },
-                        { text: 'Email: ' + info.usuario.email }
-                    ],
-                    data.ticket
+                    '',
+                    '',
+                    '',
+                    ''
                 ]
 
             ];
@@ -658,6 +644,7 @@ async function generarReleasePlan_postgres(data) {
                 })
             );
 
+            sections.push(new Paragraph({ children: [new PageBreak()] }));
             // -------------------------
             // 6 EXECUTION PLAN
             // -------------------------
@@ -670,12 +657,27 @@ async function generarReleasePlan_postgres(data) {
                 })
             );
 
-            const executionPlan = [
-                ['Action – Activity', 'Sequence Number', 'Responsible Person', 'Suggested Implementation', 'Dependent components', 'ITDS Mandatory Considerations', 'ITDS Suggested Considerations', 'Status'],
-                ['SW01', '1', [{ text: 'GI', highlight: 'Yellow' }], 'ASAP', '', '', '', [{ text: '[PENDIENTE]', highlight: 'Yellow' }]]
+           const exampleHeaders = [
+                [{ text: 'Action – Activity', bold: true }],
+                [{ text: 'Sequence Number', bold: true }],
+                [{ text: 'Responsible Person', bold: true }],
+                [{ text: 'Suggested Implementation Time', bold: true }],
+                [{ text: 'Dependent components', bold: true }],
+                [{ text: 'ITDS Mandatory Considerations', bold: true }],
+                [{ text: 'ITDS Suggested Considerations', bold: true }],
+                [{ text: 'Status', bold: true }]
             ];
-            sections.push(makeStyledDynamicTable(executionPlan));
-            sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
+            const exampleRow = [[{text: 'Implementar en productivo el siguiente Pipeline Release de PostgreSQL, en Azure DevOps para SPF_OWNER:'},
+                {text:  ' '},
+                {text: 'Release - ' + data.solicitud, bold: true},
+                {text:  ' '},
+                {text: data.link}
+            ],'1','Grupo Implementadores ITDS','ASAP',' ',' ',' ',{ text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
+
+            
+            const exampleTable = makeCustomEightColumnTable([[36,9,9,11,9,9,8,10], exampleHeaders, exampleRow], undefined, true);
+            sections.push(exampleTable);
+            sections.push(new Paragraph({ text: ' ', spacing: { after: 120 }}));
 
             // -------------------------
             // 7 COMMENTS
@@ -764,7 +766,7 @@ async function generarReleasePlan_postgres(data) {
 
                         // Subtítulos
                         new Paragraph({
-                            children: [new TextRun({ text: 'POSTGRES', size: 48, font: 'Calibri' })],
+                            children: [new TextRun({ text: 'Release Plan', size: 48, font: 'Calibri' })],
                             alignment: AlignmentType.CENTER,
                             spacing: { after: 1100 }
                         }),

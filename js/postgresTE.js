@@ -382,6 +382,23 @@ async function generarTestEvidence_postgres(data) {
                 ]
             }),
 
+
+             sections.push(
+                new Paragraph({
+                    children: [new TextRun({ text: 'Test Evidence', font: 'Calibri', size: 32, color: '4F81BD', bold: true })],
+                    spacing: { after: 120 },
+                    alignment: AlignmentType.CENTER
+                })
+            );
+
+            sections.push(
+                new Paragraph({
+                    children: [new TextRun({ text: data.solman + ', ' + data.titulo, font: 'Calibri', size: 32, color: '000000', bold: true, })],
+                    spacing: { after: 320 },
+                    alignment: AlignmentType.CENTER
+                })
+            );
+
              // 1 OVERVIEW
                 // -------------------------
                 sections.push(
@@ -460,87 +477,17 @@ async function generarTestEvidence_postgres(data) {
                 new Paragraph({
                     heading: HeadingLevel.HEADING_1,
                     children: [new TextRun({ text: '3 FUNCIONAL TEST', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24 })],
-                    spacing: { before: 20, after: 20 },
+                    spacing: { before: 20, after: 120 },
                     shading: { fill: '2E8B57' }
                 })
             );
 
             sections.push(
                 new Paragraph({
-                    children: [new TextRun({ text: ' ', font: 'Calibri', size: 20 })],
+                    children: [new TextRun({ text: 'Respaldo del material', font: 'Calibri', size: 20, italics: true })],
                     spacing: { after: 120 }
                 })
             );
-
-            // Custom table for tests: make second column wider and reduce last column
-            const testTable = new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                rows: [
-                    // Header row
-                    new TableRow({
-                        children: [
-                            new TableCell({
-                                width: { size: 6, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: '#', bold: true, size: 20, font: 'Calibri' })], alignment: AlignmentType.CENTER })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                width: { size: 30, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: 'Test Cases Description', bold: true, size: 20, font: 'Calibri' })] })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                width: { size: 15, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: 'Input Data', bold: true, size: 20, font: 'Calibri' })] })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                width: { size: 19, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: 'Step to Follow', bold: true, size: 20, font: 'Calibri' })] })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                width: { size: 40, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: 'Expected Result', bold: true, size: 20, font: 'Calibri' })] })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            })
-                        ]
-                    }),
-
-                    // Data row
-                    new TableRow({
-                        children: [
-                            new TableCell({
-                                children: [new Paragraph({ children: [new TextRun({ text: '1', size: 20, font: 'Calibri' })], alignment: AlignmentType.CENTER })],
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                children: [new Paragraph({
-                                    children: [
-                                        new TextRun({ text: 'Ejecucion de Script en QA.', size: 20, font: 'Calibri' }),
-                                        new TextRun({ break: 1 }),
-                                        new TextRun({ text: data.procedure, size: 20, bold: true, font: 'Calibri' })
-                                    ]
-                                })],
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Script', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Ejecutar Script', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: data.resultado || '', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } })
-                        ]
-                    })
-                ]
-            });
-
-            sections.push(testTable);
-            sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
-
-
 
             // -------------------------
             // 4 CHANGES TO APPLY
@@ -555,17 +502,23 @@ async function generarTestEvidence_postgres(data) {
                     shading: { fill: '2E8B57' }
                 })
             );
+
             sections.push(
                 new Paragraph({
-                    children: [new TextRun({ text: 'Se ejecuta el script en QA.', font: 'Calibri', size: 20 })],
+                    children: [new TextRun({ text: ''})],
                     spacing: { after: 120 }
                 })
             );
 
+            // -------------------------
+            // 5 OBJECTS TO DEPLOY
+            // -------------------------
             sections.push(
                 new Paragraph({
-                    children: [new TextRun({ text: data.procedure, font: 'Calibri', size: 20 })],
-                    spacing: { after: 120 }
+                    heading: HeadingLevel.HEADING_1,
+                    children: [new TextRun({ text: '5 OTHER EXECUTED TEST', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24 })],
+                    spacing: { before: 20, after: 200 },
+                    shading: { fill: '2E8B57' }
                 })
             );
 
@@ -598,12 +551,12 @@ async function generarTestEvidence_postgres(data) {
 
 
             // -------------------------
-            // 5 OBJECTS TO DEPLOY
+            // 6 APPENDIX I: TEST TYPES
             // -------------------------
             sections.push(
                 new Paragraph({
                     heading: HeadingLevel.HEADING_1,
-                    children: [new TextRun({ text: '5 OTHER EXECUTED TEST', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24 })],
+                    children: [new TextRun({ text: '6 APPENDIX I: TEST TYPES', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24 })],
                     spacing: { before: 20, after: 200 },
                     shading: { fill: '2E8B57' }
                 })
@@ -638,13 +591,13 @@ async function generarTestEvidence_postgres(data) {
 
 
             // -------------------------
-            // 6 EXECUTION PLAN
+            // 7 APPENDIX II: DATA CONVERSION TEST
             // -------------------------
             // Heading for Appendix I
             sections.push(
                 new Paragraph({
                     heading: HeadingLevel.HEADING_1,
-                    children: [new TextRun({ text: '6 APPENDIX I:   TEST TYPES', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24, italics: true })],
+                    children: [new TextRun({ text: '7 APPENDIX II: DATA CONVERSION TEST', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24, italics: true })],
                     spacing: { before: 20, after: 200 },
                     shading: { fill: '2E8B57' }
                 })
@@ -713,12 +666,12 @@ async function generarTestEvidence_postgres(data) {
 
 
             // -------------------------
-            // 7 COMMENTS
+            // 8 APPENDIX III: INTERFACE TEST
             // -------------------------
             sections.push(
                 new Paragraph({
                     heading: HeadingLevel.HEADING_1,
-                    children: [new TextRun({ text: '7 APPENDIX II:  DATA CONVERSION TEST', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24 })],
+                    children: [new TextRun({ text: '8 APPENDIX III: INTERFACE TEST', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24 })],
                     spacing: { before: 20, after: 200 },
                     shading: { fill: '2E8B57' }
                 })
@@ -757,89 +710,6 @@ async function generarTestEvidence_postgres(data) {
                 })
             );
 
-            // -------------------------
-            // 8 REVISION HISTORY
-            // -------------------------
-            sections.push(
-                new Paragraph({
-                    heading: HeadingLevel.HEADING_1,
-                    children: [new TextRun({ text: '8 APPENDIX III: INTERFACE TEST', bold: true, color: 'FFFFFF', font: 'Calibri', size: 24 })],
-                    spacing: { before: 20, after: 200 },
-                    shading: { fill: '2E8B57' }
-                })
-            );
-
-            sections.push(
-                new Paragraph({
-                    children: [new TextRun({ text: 'Special issues to take into account:', font: 'Calibri', size: 16, italics: true })],
-                    spacing: { after: 120 }
-                })
-            );
-
-            // Bulleted lines (small bullet character so we control size)
-            sections.push(new Paragraph({ children: [
-                new TextRun({ text: '•\t', font: 'Calibri', size: 14 }),
-                new TextRun({ text: 'Consider if the Failure recovery test level is enough and was included among the tests so that it is possible to analyze how the application behaves in the event of transaction cancellations or incomplete data transmissions.', font: 'Calibri', size: 14, italics: true })
-            ], spacing: { after: 100 } }));
-
-            sections.push(new Paragraph({ children: [
-                new TextRun({ text: '•\t', font: 'Calibri', size: 14 }),
-                new TextRun({ text: 'Ensure that backup/restore/recovery mechanisms are available before the test begins ', font: 'Calibri', size: 14, italics: true })
-            ], spacing: { after: 100 } }));
-
-            sections.push(
-                new Paragraph({
-                    children: [new TextRun({ text: ' ', font: 'Calibri', size: 16 })],
-                    spacing: { after: 120 }
-                })
-            );
-
-            
-
-
-            sections.push(
-                new Paragraph({
-                    children: [new TextRun({ text: '        Applicable tests: ', font: 'Calibri', size: 16 })],
-                    spacing: { after: 120 }
-                })
-            );
-            // Bulleted lines (small bullet character so we control size)
-            sections.push(new Paragraph({ children: [
-                new TextRun({ text: '                \t', font: 'Calibri', size: 14 }),
-                new TextRun({ text: 'Data and Database Integrity Test', font: 'Calibri', size: 14, italics: true })
-            ], spacing: { after: 100 } }));
-
-            sections.push(new Paragraph({ children: [
-                new TextRun({ text: '                \t', font: 'Calibri', size: 14 }),
-                new TextRun({ text: 'Functional Test', font: 'Calibri', size: 14, italics: true })
-            ], spacing: { after: 100 } }));
-
-            sections.push(new Paragraph({ children: [
-                new TextRun({ text: '                   \t', font: 'Calibri', size: 14 }),
-                new TextRun({ text: 'Business Cycle Test (depending on the impact of the change)', font: 'Calibri', size: 14, italics: true })
-            ], spacing: { after: 100 } }));
-
-            sections.push(new Paragraph({ children: [
-                new TextRun({ text: '                   \t', font: 'Calibri', size: 14 }),
-                new TextRun({ text: 'Performance Test', font: 'Calibri', size: 14, italics: true })
-            ], spacing: { after: 100 } }));
-
-            sections.push(new Paragraph({ children: [
-                new TextRun({ text: '                   \t', font: 'Calibri', size: 14 }),
-                new TextRun({ text: 'Load Test', font: 'Calibri', size: 14, italics: true })
-            ], spacing: { after: 100 } }));
-
-            sections.push(new Paragraph({ children: [
-                new TextRun({ text: '                   \t', font: 'Calibri', size: 14 }),
-                new TextRun({ text: 'Volume Test', font: 'Calibri', size: 14, italics: true })
-            ], spacing: { after: 100 } }));
-            
-            sections.push(                
-                new Paragraph({
-                children: [new TextRun({ text: ' ', font: 'Calibri', size: 16 })],
-                spacing: { after: 120 }
-            })
-            );
 
             // -------------------------
             // 9 REVISION HISTORY
@@ -924,7 +794,7 @@ async function generarTestEvidence_postgres(data) {
 
                         // Subtítulos
                         new Paragraph({
-                            children: [new TextRun({ text: 'POSTGRES Evidence', size: 48, font: 'Calibri' })],
+                            children: [new TextRun({ text: 'Test Evidence', size: 48, font: 'Calibri' })],
                             alignment: AlignmentType.CENTER,
                             spacing: { after: 1100 }
                         }),
