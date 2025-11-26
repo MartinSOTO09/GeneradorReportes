@@ -54,6 +54,9 @@
               <h3>Información General</h3>
             </div>
           </div>
+          <div style="margin-left:auto">
+            <button type="button" id="btn_add_case" class="btn-primary" style="padding:0.4rem 0.8rem">Agregar caso</button>
+          </div>
         </div>
         <div class="card-body info-grid">
           <div class="info-left">
@@ -107,7 +110,7 @@
                   <option>BIO_OWNER</option>
                   <option>BIO_USER</option>
                   <option>BTQ</option>
-                  <option>BTO_ADMIN</option>
+                  <option>BTQ_ADMIN</option>
                   <option>CCO</option>
                   <option>CCO_ADMIN</option>
                   <option>CCO_BK</option>
@@ -116,7 +119,7 @@
                   <option>CCO_OWNER</option>
                   <option>CCO_USER</option>
                   <option>CCR</option>
-                  <option>CCS_ADMIN</option>
+                  <option>CCR_ADMIN</option>
                   <option>CCS_OWNER</option>
                   <option>CCS_USER</option>
                   <option>CDB_OWNER</option>
@@ -124,14 +127,14 @@
                   <option>CKN2_OWNER</option>
                   <option>CKN2_USER</option>
                   <option>CKN_OWNER</option>
-                  <option>CKNTOC_OWNER</option>
-                  <option>CKNTOC_USER</option>
+                  <option>CKNTCO_OWNER</option>
+                  <option>CKNTCO_USER</option>
                   <option>CNP</option>
                   <option>CNP_ADMIN</option>
                   <option>COM</option>
-                  <option>COO_ADMIN</option>
-                  <option>COO_OWNER</option>
-                  <option>COO_USER</option>
+                  <option>COM_ADMIN</option>
+                  <option>COQ_OWNER</option>
+                  <option>COQ_USER</option>
                   <option>COS_OWNER</option>
                   <option>COS_USER</option>
                   <option>CPR</option>
@@ -140,7 +143,9 @@
                   <option>CTR_ADMIN</option>
                   <option>CVS</option>
                   <option>CVS_ADMIN</option>
+                  <option>DAC_OWNER</option>
                   <option>DAC_USER</option>
+                  <option>DDB</option>
                   <option>DDB_ADMIN</option>
                   <option>DDB_READ</option>
                   <option>DIM</option>
@@ -151,8 +156,8 @@
                   <option>EFA</option>
                   <option>EFA_ADMIN</option>
                   <option>EXTHOL</option>
-                  <option>EXTIMSI</option>
-                  <option>EXTRADA</option>
+                  <option>EXTMSI</option>
+                  <option>EXTRDA</option>
                   <option>EXTTET</option>
                   <option>FEL_OWNER</option>
                   <option>FEL_USER</option>
@@ -188,8 +193,8 @@
                   <option>MTR</option>
                   <option>MTRC</option>
                   <option>MTRC_ADMIN</option>
-                  <option>MTRUCA</option>
-                  <option>MTRUCA_ADMIN</option>
+                  <option>MTRTUCA</option>
+                  <option>MTRTUCA_ADMIN</option>
                   <option>MYD_USER</option>
                   <option>MYP_OWNER</option>
                   <option>MYP_USER</option>
@@ -208,6 +213,8 @@
                   <option>QMT</option>
                   <option>QMT_ADMIN</option>
                   <option>RCB</option>
+                  <option>RCB_ADMIN</option>
+                  <option>RCH</option>
                   <option>RCH_ADMIN</option>
                   <option>RCT</option>
                   <option>RCT_ADMIN</option>
@@ -216,16 +223,23 @@
                   <option>RHI_USER</option>
                   <option>RHO_ADMIN</option>
                   <option>RMB</option>
+                  <option>RMB_ADMIN</option>
+                  <option>RMU</option>
                   <option>RMU_ADMIN</option>
                   <option>SAB</option>
                   <option>SAB_ADMIN</option>
+                  <option>SBS_OWNER</option>
                   <option>SBS_USER</option>
                   <option>SCD</option>
+                  <option>SCD_ADMIN</option>
                   <option>SCT</option>
+                  <option>SCT_ADMIN</option>
                   <option>SCV_OWNER</option>
                   <option>SCV_USER</option>
                   <option>SIM</option>
+                  <option>SIM_ADMIN</option>
                   <option>SMA_USER</option>
+                  <option>SMI</option>
                   <option>SMI_ADMIN</option>
                   <option>SMT_APPL</option>
                   <option>SPF</option>
@@ -399,7 +413,7 @@
                   <option>BIO_OWNER</option>
                   <option>BIO_USER</option>
                   <option>BTQ</option>
-                  <option>BTO_ADMIN</option>
+                  <option>BTQ_ADMIN</option>
                   <option>CCO</option>
                   <option>CCO_ADMIN</option>
                   <option>CCO_BK</option>
@@ -408,7 +422,7 @@
                   <option>CCO_OWNER</option>
                   <option>CCO_USER</option>
                   <option>CCR</option>
-                  <option>CCS_ADMIN</option>
+                  <option>CCR_ADMIN</option>
                   <option>CCS_OWNER</option>
                   <option>CCS_USER</option>
                   <option>CDB_OWNER</option>
@@ -416,14 +430,14 @@
                   <option>CKN2_OWNER</option>
                   <option>CKN2_USER</option>
                   <option>CKN_OWNER</option>
-                  <option>CKNTOC_OWNER</option>
-                  <option>CKNTOC_USER</option>
+                  <option>CKNTCO_OWNER</option>
+                  <option>CKNTCO_USER</option>
                   <option>CNP</option>
                   <option>CNP_ADMIN</option>
                   <option>COM</option>
-                  <option>COO_ADMIN</option>
-                  <option>COO_OWNER</option>
-                  <option>COO_USER</option>
+                  <option>COM_ADMIN</option>
+                  <option>COQ_OWNER</option>
+                  <option>COQ_USER</option>
                   <option>COS_OWNER</option>
                   <option>COS_USER</option>
                   <option>CPR</option>
@@ -432,7 +446,9 @@
                   <option>CTR_ADMIN</option>
                   <option>CVS</option>
                   <option>CVS_ADMIN</option>
+                  <option>DAC_OWNER</option>
                   <option>DAC_USER</option>
+                  <option>DDB</option>
                   <option>DDB_ADMIN</option>
                   <option>DDB_READ</option>
                   <option>DIM</option>
@@ -443,8 +459,8 @@
                   <option>EFA</option>
                   <option>EFA_ADMIN</option>
                   <option>EXTHOL</option>
-                  <option>EXTIMSI</option>
-                  <option>EXTRADA</option>
+                  <option>EXTMSI</option>
+                  <option>EXTRDA</option>
                   <option>EXTTET</option>
                   <option>FEL_OWNER</option>
                   <option>FEL_USER</option>
@@ -480,8 +496,8 @@
                   <option>MTR</option>
                   <option>MTRC</option>
                   <option>MTRC_ADMIN</option>
-                  <option>MTRUCA</option>
-                  <option>MTRUCA_ADMIN</option>
+                  <option>MTRTUCA</option>
+                  <option>MTRTUCA_ADMIN</option>
                   <option>MYD_USER</option>
                   <option>MYP_OWNER</option>
                   <option>MYP_USER</option>
@@ -500,6 +516,8 @@
                   <option>QMT</option>
                   <option>QMT_ADMIN</option>
                   <option>RCB</option>
+                  <option>RCB_ADMIN</option>
+                  <option>RCH</option>
                   <option>RCH_ADMIN</option>
                   <option>RCT</option>
                   <option>RCT_ADMIN</option>
@@ -508,16 +526,23 @@
                   <option>RHI_USER</option>
                   <option>RHO_ADMIN</option>
                   <option>RMB</option>
+                  <option>RMB_ADMIN</option>
+                  <option>RMU</option>
                   <option>RMU_ADMIN</option>
                   <option>SAB</option>
                   <option>SAB_ADMIN</option>
+                  <option>SBS_OWNER</option>
                   <option>SBS_USER</option>
                   <option>SCD</option>
+                  <option>SCD_ADMIN</option>
                   <option>SCT</option>
+                  <option>SCT_ADMIN</option>
                   <option>SCV_OWNER</option>
                   <option>SCV_USER</option>
                   <option>SIM</option>
+                  <option>SIM_ADMIN</option>
                   <option>SMA_USER</option>
+                  <option>SMI</option>
                   <option>SMI_ADMIN</option>
                   <option>SMT_APPL</option>
                   <option>SPF</option>
@@ -593,11 +618,25 @@
           <div class="info-right"> </div>
         </div>
       </section> <!-- Origen / Destino (moved into Información General) --> <!-- Descripción / Resultado / Respaldos -->
-      <!-- Postgres compact layout will be injected inline inside Información General when selected -->
-      <section class="card card-large card-large-expand">
-        <div class="card-header">
-          <div class="card-title"> <i class="hdr-icon" aria-hidden="true"></i>
-            <div>
+     <!-- Nueva tarjeta: Casos adicionales -->
+     <section class="card" id="extra_cases_card" style="display:none">
+       <div class="card-header">
+         <div class="card-title">
+           <i class="hdr-icon" aria-hidden="true"></i>
+           <div>
+             <h3>Casos adicionales</h3>
+           </div>
+         </div>
+       </div>
+       <div class="card-body" style="display:flex;flex-direction:column;gap:0.8rem">
+         <div id="extra_cases_container" style="display:grid;gap:0.8rem"></div>
+       </div>
+     </section>
+     <!-- Postgres compact layout will be injected inline inside Información General when selected -->
+     <section class="card card-large card-large-expand">
+      <div class="card-header">
+        <div class="card-title"> <i class="hdr-icon" aria-hidden="true"></i>
+         <div>
               <h3>Detalles y Respaldos</h3>
             </div>
           </div>
