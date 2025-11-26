@@ -572,69 +572,75 @@ async function generarTestEvidence(data) {
                 })
             );
 
-            // Custom table for tests: make second column wider and reduce last column
-            const testTable = new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                rows: [
-                    // Header row
-                    new TableRow({
-                        children: [
-                            new TableCell({
-                                width: { size: 6, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: '#', bold: true, size: 20, font: 'Calibri' })], alignment: AlignmentType.CENTER })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                width: { size: 30, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: 'Test Cases Description', bold: true, size: 20, font: 'Calibri' })] })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                width: { size: 15, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: 'Input Data', bold: true, size: 20, font: 'Calibri' })] })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                width: { size: 19, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: 'Step to Follow', bold: true, size: 20, font: 'Calibri' })] })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                width: { size: 40, type: WidthType.PERCENTAGE },
-                                children: [new Paragraph({ children: [new TextRun({ text: 'Expected Result', bold: true, size: 20, font: 'Calibri' })] })],
-                                shading: { fill: 'c1d59a' },
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            })
-                        ]
+            // Construir filas dinámicamente para permitir casos adicionales Oracle
+            const makeTestHeaderRow = () => new TableRow({
+                children: [
+                    new TableCell({
+                        width: { size: 6, type: WidthType.PERCENTAGE },
+                        children: [new Paragraph({ children: [new TextRun({ text: '#', bold: true, size: 20, font: 'Calibri' })], alignment: AlignmentType.CENTER })],
+                        shading: { fill: 'c1d59a' },
+                        margins: { top: 75, bottom: 75, left: 75, right: 75 }
                     }),
-
-                    // Data row
-                    new TableRow({
-                        children: [
-                            new TableCell({
-                                children: [new Paragraph({ children: [new TextRun({ text: '1', size: 20, font: 'Calibri' })], alignment: AlignmentType.CENTER })],
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({
-                                children: [new Paragraph({
-                                    children: [
-                                        new TextRun({ text: 'Ejecucion de Script en QA.', size: 20, font: 'Calibri' }),
-                                        new TextRun({ break: 1 }),
-                                        new TextRun({ text: data.procedure, size: 20, bold: true, font: 'Calibri' })
-                                    ]
-                                })],
-                                margins: { top: 75, bottom: 75, left: 75, right: 75 }
-                            }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Script', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Ejecutar Script', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: data.resultado || '', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } })
-                        ]
+                    new TableCell({
+                        width: { size: 30, type: WidthType.PERCENTAGE },
+                        children: [new Paragraph({ children: [new TextRun({ text: 'Test Cases Description', bold: true, size: 20, font: 'Calibri' })] })],
+                        shading: { fill: 'c1d59a' },
+                        margins: { top: 75, bottom: 75, left: 75, right: 75 }
+                    }),
+                    new TableCell({
+                        width: { size: 15, type: WidthType.PERCENTAGE },
+                        children: [new Paragraph({ children: [new TextRun({ text: 'Input Data', bold: true, size: 20, font: 'Calibri' })] })],
+                        shading: { fill: 'c1d59a' },
+                        margins: { top: 75, bottom: 75, left: 75, right: 75 }
+                    }),
+                    new TableCell({
+                        width: { size: 19, type: WidthType.PERCENTAGE },
+                        children: [new Paragraph({ children: [new TextRun({ text: 'Step to Follow', bold: true, size: 20, font: 'Calibri' })] })],
+                        shading: { fill: 'c1d59a' },
+                        margins: { top: 75, bottom: 75, left: 75, right: 75 }
+                    }),
+                    new TableCell({
+                        width: { size: 40, type: WidthType.PERCENTAGE },
+                        children: [new Paragraph({ children: [new TextRun({ text: 'Expected Result', bold: true, size: 20, font: 'Calibri' })] })],
+                        shading: { fill: 'c1d59a' },
+                        margins: { top: 75, bottom: 75, left: 75, right: 75 }
                     })
                 ]
+            });
+
+            const makeTestDataRow = (numText, procText) => new TableRow({
+                children: [
+                    new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: String(numText), size: 20, font: 'Calibri' })], alignment: AlignmentType.CENTER })],
+                        margins: { top: 75, bottom: 75, left: 75, right: 75 }
+                    }),
+                    new TableCell({
+                        children: [new Paragraph({
+                            children: [
+                                new TextRun({ text: 'Ejecucion de Script en QA.', size: 20, font: 'Calibri' }),
+                                new TextRun({ break: 1 }),
+                                new TextRun({ text: procText, size: 20, bold: true, font: 'Calibri' })
+                            ]
+                        })],
+                        margins: { top: 75, bottom: 75, left: 75, right: 75 }
+                    }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Script', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Ejecutar Script', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: data.resultado || '', size: 20, font: 'Calibri' })] })], margins: { top: 75, bottom: 75, left: 75, right: 75 } })
+                ]
+            });
+
+            const testRows = [makeTestHeaderRow(), makeTestDataRow('1', data.procedure)];
+            try {
+                const oracleExtras = Array.isArray(data.extra_cases) ? data.extra_cases.filter(c => c && c.type === 'oracle') : [];
+                oracleExtras.forEach((c, idx) => {
+                    testRows.push(makeTestDataRow(String(idx + 2), c.procedure || ''));
+                });
+            } catch(_) {}
+
+            const testTable = new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: testRows
             });
 
             sections.push(testTable);
@@ -668,6 +674,19 @@ async function generarTestEvidence(data) {
                     spacing: { after: 120 }
                 })
             );
+
+            // Agregar procedimientos de casos adicionales Oracle en INTEGRAL TEST
+            try {
+                const oracleExtras = Array.isArray(data.extra_cases) ? data.extra_cases.filter(c => c && c.type === 'oracle') : [];
+                oracleExtras.forEach((c) => {
+                    sections.push(
+                        new Paragraph({
+                            children: [new TextRun({ text: c.procedure || '', font: 'Calibri', size: 20 })],
+                            spacing: { after: 120 }
+                        })
+                    );
+                });
+            } catch(_) {}
 
             const testT = [
                 ['Test Type', 'X', 'Justification of Excluded Tests / Test Results'],

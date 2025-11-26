@@ -279,7 +279,229 @@ document.addEventListener("DOMContentLoaded", async () => {
                     setTimeout(() => { dbIcon.style.transform = 'scale(1)'; }, 160);
                 }
                 triggerInfoCardAnim();
+
+                // Al cambiar de sistema, borrar casos adicionales y ocultar tarjeta (animación suave)
+                try {
+                    const extraContainer = document.getElementById('extra_cases_container');
+                    const extraCard = document.getElementById('extra_cases_card');
+                    if (extraContainer) extraContainer.innerHTML = '';
+                    if (extraCard && extraCard.style.display !== 'none') {
+                        extraCard.style.transition = 'opacity 300ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1)';
+                        extraCard.style.willChange = 'opacity, transform';
+                        extraCard.style.opacity = '1';
+                        extraCard.style.transform = 'translateY(0)';
+                        requestAnimationFrame(() => {
+                            extraCard.style.opacity = '0';
+                            extraCard.style.transform = 'translateY(6px)';
+                            setTimeout(() => { extraCard.style.display = 'none'; }, 300);
+                        });
+                    }
+                } catch (_) {}
             });
+
+            // --- Casos adicionales (dinámicos por tipo de DB) ---
+            const extraCasesContainer = document.getElementById('extra_cases_container');
+            const addCaseBtn = document.getElementById('btn_add_case');
+            const extraCasesCard = document.getElementById('extra_cases_card');
+
+            const cloneSelectWithOptions = (sourceId) => {
+                const src = document.getElementById(sourceId);
+                const sel = document.createElement('select');
+                if (src) sel.innerHTML = src.innerHTML; // copiar opciones
+                return sel;
+            };
+
+            const createCaseCard = (type) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'extra-case';
+                wrapper.dataset.type = type;
+                wrapper.style.opacity = '0';
+                wrapper.style.transform = 'translateY(6px)';
+                wrapper.style.transition = 'opacity 260ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1)';
+
+                const body = document.createElement('div');
+                body.style.display = 'grid';
+                body.style.gap = '0.8rem';
+
+                // Botón eliminar
+                const actions = document.createElement('div');
+                actions.style.display = 'flex';
+                actions.style.justifyContent = 'flex-end';
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.textContent = 'Eliminar';
+                delBtn.className = 'btn-cancel';
+                // Estilo más claro de delete (rojo) con hover
+                delBtn.style.background = '#dc2626';
+                delBtn.style.border = '1px solid #b91c1c';
+                delBtn.style.color = '#fff';
+                delBtn.style.padding = '0.35rem 0.7rem';
+                delBtn.style.borderRadius = '6px';
+                delBtn.style.cursor = 'pointer';
+                delBtn.addEventListener('mouseenter', () => { delBtn.style.background = '#b91c1c'; });
+                delBtn.addEventListener('mouseleave', () => { delBtn.style.background = '#dc2626'; });
+                delBtn.addEventListener('click', () => {
+                    wrapper.style.opacity = '0';
+                    wrapper.style.transform = 'translateY(6px)';
+                    setTimeout(() => {
+                        wrapper.remove();
+                        try {
+                            const remaining = extraCasesContainer.querySelectorAll('.extra-case').length;
+                            if (remaining === 0 && extraCasesCard) {
+                                extraCasesCard.style.transition = 'opacity 300ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1)';
+                                extraCasesCard.style.willChange = 'opacity, transform';
+                                extraCasesCard.style.opacity = '1';
+                                extraCasesCard.style.transform = 'translateY(0)';
+                                requestAnimationFrame(() => {
+                                    extraCasesCard.style.opacity = '0';
+                                    extraCasesCard.style.transform = 'translateY(6px)';
+                                    setTimeout(() => { extraCasesCard.style.display = 'none'; }, 300);
+                                });
+                            }
+                        } catch(_) {}
+                    }, 260);
+                });
+                actions.appendChild(delBtn);
+
+                if (type === 'oracle') {
+                    // Distribución similar a la tarjeta principal:
+                    // Fila superior: Base Origen, Esquema Origen, Procedure (a un lado)
+                    const rowTop = document.createElement('div');
+                    rowTop.style.display = 'grid';
+                    rowTop.style.gridTemplateColumns = '200px 200px 1fr';
+                    rowTop.style.gap = '0.8rem';
+
+                    const baseOrigen = document.createElement('div');
+                    baseOrigen.innerHTML = '<label>Base Origen</label>';
+                    const bo = cloneSelectWithOptions('base_origen');
+                    bo.className = 'extra_base_origen';
+                    baseOrigen.appendChild(bo);
+
+                    const esquemaOrigen = document.createElement('div');
+                    esquemaOrigen.innerHTML = '<label>Esquema Origen</label>';
+                    const eo = cloneSelectWithOptions('esquema_origen');
+                    eo.className = 'extra_esquema_origen';
+                    esquemaOrigen.appendChild(eo);
+
+                    const procDiv = document.createElement('div');
+                    procDiv.innerHTML = '<label>Procedure</label>';
+                    const proc = document.createElement('input');
+                    proc.type = 'text';
+                    proc.placeholder = 'Nombre del procedimiento';
+                    proc.className = 'extra_procedure';
+                    procDiv.appendChild(proc);
+
+                    rowTop.appendChild(baseOrigen);
+                    rowTop.appendChild(esquemaOrigen);
+                    rowTop.appendChild(procDiv);
+
+                    // Fila inferior: Base Destino, Esquema Destino
+                    const rowBottom = document.createElement('div');
+                    rowBottom.style.display = 'grid';
+                    rowBottom.style.gridTemplateColumns = '200px 200px';
+                    rowBottom.style.gap = '0.8rem';
+
+                    const baseDestino = document.createElement('div');
+                    baseDestino.innerHTML = '<label>Base Destino</label>';
+                    const bd = cloneSelectWithOptions('base_destino');
+                    bd.className = 'extra_base_destino';
+                    baseDestino.appendChild(bd);
+
+                    const esquemaDestino = document.createElement('div');
+                    esquemaDestino.innerHTML = '<label>Esquema Destino</label>';
+                    const ed = cloneSelectWithOptions('esquemas_destino');
+                    ed.className = 'extra_esquema_destino';
+                    esquemaDestino.appendChild(ed);
+
+                    rowBottom.appendChild(baseDestino);
+                    rowBottom.appendChild(esquemaDestino);
+
+                    body.appendChild(rowTop);
+                    body.appendChild(rowBottom);
+                } else if (type === 'postgres') {
+                    // Solicitud y Link
+                    const row = document.createElement('div');
+                    row.style.display = 'grid';
+                    // Hacer que el Link no ocupe todo el ancho
+                    row.style.gridTemplateColumns = '200px 420px';
+                    row.style.gap = '0.8rem';
+
+                    const solDiv = document.createElement('div');
+                    solDiv.innerHTML = '<label>Solicitud</label>';
+                    const sol = document.createElement('input');
+                    sol.type = 'text';
+                    sol.placeholder = 'Número o referencia';
+                    sol.className = 'extra_solicitud';
+                    solDiv.appendChild(sol);
+
+                    const linkDiv = document.createElement('div');
+                    linkDiv.innerHTML = '<label>Link</label>';
+                    const link = document.createElement('input');
+                    link.type = 'url';
+                    link.placeholder = 'https://... o ssh://...';
+                    link.style.width = '100%';
+                    link.style.maxWidth = '420px';
+                    link.className = 'extra_link';
+                    linkDiv.appendChild(link);
+
+                    row.appendChild(solDiv);
+                    row.appendChild(linkDiv);
+                    body.appendChild(row);
+                } else {
+                    // linux: Solicitud y Nombre
+                    const row = document.createElement('div');
+                    row.style.display = 'grid';
+                    row.style.gridTemplateColumns = '200px 200px';
+                    row.style.gap = '0.8rem';
+
+                    const solDiv = document.createElement('div');
+                    solDiv.innerHTML = '<label>Solicitud</label>';
+                    const sol = document.createElement('input');
+                    sol.type = 'text';
+                    sol.placeholder = 'Número o referencia';
+                    sol.className = 'extra_solicitud';
+                    solDiv.appendChild(sol);
+
+                    const nomDiv = document.createElement('div');
+                    nomDiv.innerHTML = '<label>Nombre Solicitud</label>';
+                    const nom = document.createElement('input');
+                    nom.type = 'text';
+                    nom.placeholder = 'Nombre descriptivo';
+                    nom.className = 'extra_nombre_solicitud';
+                    nomDiv.appendChild(nom);
+
+                    row.appendChild(solDiv);
+                    row.appendChild(nomDiv);
+                    body.appendChild(row);
+                }
+
+                body.appendChild(actions);
+                wrapper.appendChild(body);
+                return wrapper;
+            };
+
+            if (addCaseBtn && extraCasesContainer) {
+                addCaseBtn.addEventListener('click', () => {
+                    const currentType = (dbTypeSelect && dbTypeSelect.value) ? dbTypeSelect.value : 'oracle';
+                    const card = createCaseCard(currentType);
+                    if (extraCasesCard && extraCasesCard.style.display === 'none') {
+                        extraCasesCard.style.display = '';
+                        extraCasesCard.style.opacity = '0';
+                        extraCasesCard.style.transform = 'translateY(6px)';
+                        extraCasesCard.style.transition = 'opacity 300ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1)';
+                        requestAnimationFrame(() => {
+                            extraCasesCard.style.opacity = '1';
+                            extraCasesCard.style.transform = 'translateY(0)';
+                        });
+                    }
+                    extraCasesContainer.appendChild(card);
+                    requestAnimationFrame(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    });
+                    try { card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (_) {}
+                });
+            }
         }
     } catch (error) {
         console.error('Error cargando usuarios:', error);
@@ -342,6 +564,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 // Ensure checkboxes cleared
                 const chkboxes = Array.from(document.querySelectorAll('.checkbox-row input[type="checkbox"]'));
                 chkboxes.forEach(ch => ch.checked = false);
+
+                // Limpiar y ocultar Casos adicionales
+                try {
+                    const extraContainer = document.getElementById('extra_cases_container');
+                    const extraCard = document.getElementById('extra_cases_card');
+                    if (extraContainer) extraContainer.innerHTML = '';
+                    if (extraCard) extraCard.style.display = 'none';
+                } catch (_) {}
             }, totalDelay);
         } catch (err) {
             console.warn('animateClearPreserveUser error:', err);
@@ -396,6 +626,39 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ,
             db_type: dbTypeValue,
         };
+
+        // Recolectar casos adicionales
+        const extraCases = [];
+        const extraContainer = document.getElementById('extra_cases_container');
+        if (extraContainer) {
+            const cards = Array.from(extraContainer.querySelectorAll('.extra-case'));
+            cards.forEach(c => {
+                const type = c.dataset.type || 'oracle';
+                if (type === 'oracle') {
+                    extraCases.push({
+                        type,
+                        base_origen: (c.querySelector('.extra_base_origen') || {}).value || '',
+                        esquema_origen: (c.querySelector('.extra_esquema_origen') || {}).value || '',
+                        base_destino: (c.querySelector('.extra_base_destino') || {}).value || '',
+                        esquema_destino: (c.querySelector('.extra_esquema_destino') || {}).value || '',
+                        procedure: (c.querySelector('.extra_procedure') || {}).value || ''
+                    });
+                } else if (type === 'postgres') {
+                    extraCases.push({
+                        type,
+                        solicitud: (c.querySelector('.extra_solicitud') || {}).value || '',
+                        link: (c.querySelector('.extra_link') || {}).value || ''
+                    });
+                } else if (type === 'linux') {
+                    extraCases.push({
+                        type,
+                        solicitud: (c.querySelector('.extra_solicitud') || {}).value || '',
+                        nombre_solicitud: (c.querySelector('.extra_nombre_solicitud') || {}).value || ''
+                    });
+                }
+            });
+        }
+        data.extra_cases = extraCases;
 
         // Compatibilidad: en Postgres, mapear link -> procedure para los generadores existentes
         if (data.db_type === 'postgres') {

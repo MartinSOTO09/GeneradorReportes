@@ -538,6 +538,22 @@ async function generarReleasePlan_postgres(data) {
 
             ];
 
+            // Agregar filas para casos adicionales de Postgres (SW02..SW0N)
+            try {
+                const pgExtras = Array.isArray(data.extra_cases) ? data.extra_cases.filter(c => c && c.type === 'postgres') : [];
+                pgExtras.forEach((c, idx) => {
+                    const swId = `SW0${idx + 2}`;
+                    hardwareSoftware.push([
+                        swId,
+                        'SW',
+                        '',
+                        '',
+                        '',
+                        ''
+                    ]);
+                });
+            } catch(_) {}
+
             sections.push(makeStyledDynamicTable(hardwareSoftware));
             sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
 
@@ -674,8 +690,24 @@ async function generarReleasePlan_postgres(data) {
                 {text: data.link}
             ],'1','Grupo Implementadores ITDS','ASAP',' ',' ',' ',{ text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
 
-            
-            const exampleTable = makeCustomEightColumnTable([[36,9,9,11,9,9,8,10], exampleHeaders, exampleRow], undefined, true);
+            // Construir filas dinámicas agregando un renglón por cada caso adicional de Postgres
+            const rowsRP6 = [exampleHeaders, exampleRow];
+            try {
+                const pgExtras = Array.isArray(data.extra_cases) ? data.extra_cases.filter(c => c && c.type === 'postgres') : [];
+                pgExtras.forEach((c, idx) => {
+                    const seq = String(idx + 2);
+                    const row = [[
+                        { text: 'Implementar en productivo el siguiente Pipeline Release de PostgreSQL, en Azure DevOps para SPF_OWNER:' },
+                        { text: ' ' },
+                        { text: 'Release - ' + (c.solicitud || ''), bold: true },
+                        { text: ' ' },
+                        { text: c.link || '' }
+                    ], seq, 'Grupo Implementadores ITDS', 'ASAP', ' ', ' ', ' ', { text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
+                    rowsRP6.push(row);
+                });
+            } catch(_) {}
+
+            const exampleTable = makeCustomEightColumnTable([[36,9,9,11,9,9,8,10], ...rowsRP6], undefined, true);
             sections.push(exampleTable);
             sections.push(new Paragraph({ text: ' ', spacing: { after: 120 }}));
 

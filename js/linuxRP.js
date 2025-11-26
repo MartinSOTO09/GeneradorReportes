@@ -538,6 +538,22 @@ async function generarReleasePlan_linux(data) {
 
             ];
 
+            // Agregar filas para casos adicionales de Linux (SW02..SW0N)
+            try {
+                const linuxExtras = Array.isArray(data.extra_cases) ? data.extra_cases.filter(c => c && c.type === 'linux') : [];
+                linuxExtras.forEach((c, idx) => {
+                    const swId = `SW0${idx + 2}`;
+                    hardwareSoftware.push([
+                        swId,
+                        'SW',
+                        '',
+                        '',
+                        '',
+                        ''
+                    ]);
+                });
+            } catch(_) {}
+
             sections.push(makeStyledDynamicTable(hardwareSoftware));
             sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
 
@@ -690,7 +706,21 @@ async function generarReleasePlan_linux(data) {
             ], 'ASAP', ' ', ' ', ' ', { text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
 
 
-            const exampleTable = makeCustomEightColumnTable([[24, 9, 21, 11, 9, 9, 8, 10], exampleHeaders, exampleRow, exampleRow2], undefined, true);
+            // Construir filas dinámicas agregando un renglón por cada caso adicional de Linux (basado en ejecución de solicitud)
+            const rowsRP6 = [exampleHeaders, exampleRow, exampleRow2];
+            try {
+                const linuxExtras = Array.isArray(data.extra_cases) ? data.extra_cases.filter(c => c && c.type === 'linux') : [];
+                linuxExtras.forEach((c, idx) => {
+                    const seq = String(idx + 3); // después de 1 y 2
+                    const row = [[
+                        { text: 'Ejecución de la solicitud ' },
+                        { text: 'Tamsa: ' + (c.solicitud || '') + ' - ' + (c.nombre_solicitud || ''), bold: true }
+                    ], seq, [{ text: info.usuario.nombre }, { text: info.usuario.email }], 'ASAP', ' ', ' ', ' ', { text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
+                    rowsRP6.push(row);
+                });
+            } catch(_) {}
+
+            const exampleTable = makeCustomEightColumnTable([[24, 9, 21, 11, 9, 9, 8, 10], ...rowsRP6], undefined, true);
             sections.push(exampleTable);
             sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } }));
 

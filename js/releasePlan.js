@@ -463,6 +463,33 @@ async function generarReleasePlan(data) {
 
             ];
 
+            // Agregar filas para casos adicionales de Oracle (SW02..SW0N)
+            try {
+                const oracleExtras = Array.isArray(data.extra_cases) ? data.extra_cases.filter(c => c && c.type === 'oracle') : [];
+                oracleExtras.forEach((c, idx) => {
+                    const swId = `SW0${idx + 2}`; // SW02, SW03, ...
+                    hardwareSoftware.push([
+                        swId,
+                        'SW',
+                        'Oracle',
+                        'Oasis/Menu2K',
+                        [
+                            { text: 'Ejecutar el siguiente procedimiento con Menu2k: ' },
+                            { text: ' ' },
+                            { text: (c.procedure || ''), size: 22, bold: true },
+                            { text: 'Origin Database: ' + (c.base_origen || '') },
+                            { text: 'Origin Schema: ' + (c.esquema_origen || '') },
+                            { text: 'Target Database: ' + (c.base_destino || '') },
+                            { text: 'Target Schema: ' + (c.esquema_destino || '') },
+                            { text: 'Reason: ' + data.ticket + ' Urgent Change: ' + data.solman },
+                            { text: ' ' },
+                            { text: 'Email: ' + info.usuario.email }
+                        ],
+                        data.ticket
+                    ]);
+                });
+            } catch(_) {}
+
             sections.push(makeStyledDynamicTable(hardwareSoftware));
             sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
 
@@ -585,6 +612,24 @@ async function generarReleasePlan(data) {
                 ['Action – Activity', 'Sequence Number', 'Responsible Person', 'Suggested Implementation', 'Dependent components', 'ITDS Mandatory Considerations', 'ITDS Suggested Considerations', 'Status'],
                 ['SW01', '1', [{ text: 'GI', highlight: 'Yellow' }], 'ASAP', '', '', '', [{ text: '[PENDIENTE]', highlight: 'Yellow' }]]
             ];
+
+            // Agregar filas al plan de ejecución para casos adicionales de Oracle (SW02..SW0N)
+            try {
+                const oracleExtras = Array.isArray(data.extra_cases) ? data.extra_cases.filter(c => c && c.type === 'oracle') : [];
+                oracleExtras.forEach((c, idx) => {
+                    const swId = `SW0${idx + 2}`; // SW02, SW03, ...
+                    executionPlan.push([
+                        swId,
+                        String(idx + 2),
+                        [{ text: 'GI', highlight: 'Yellow' }],
+                        'ASAP',
+                        '',
+                        '',
+                        '',
+                        [{ text: '[PENDIENTE]', highlight: 'Yellow' }]
+                    ]);
+                });
+            } catch(_) {}
             sections.push(makeStyledDynamicTable(executionPlan));
             sections.push(new Paragraph({ text: ' ', spacing: { after: 120 } })); // Espacio después de la tabla
 
