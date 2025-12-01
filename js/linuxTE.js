@@ -534,7 +534,7 @@ async function generarTestEvidence_linux(data) {
                     new TableCell({
                         children: [new Paragraph({
                             children: [
-                                new TextRun({ text: 'Ejecucion de la solicitid: ' + sol + ' - ' + nom, size: 20, font: 'Calibri' })
+                                new TextRun({ text: 'Ejecucion de la solicitud: ' + sol + ' - ' + nom, size: 20, font: 'Calibri' })
                             ]
                         })],
                         margins: { top: 75, bottom: 75, left: 75, right: 75 }
@@ -971,3 +971,4 @@ async function generarTestEvidence_linux(data) {
         throw error;
     }
 }
+
