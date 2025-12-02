@@ -375,12 +375,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     baseOrigen.innerHTML = '<label>Base Origen</label>';
                     const bo = cloneSelectWithOptions('base_origen');
                     bo.className = 'extra_base_origen';
+                    bo.required = true;
                     baseOrigen.appendChild(bo);
 
                     const esquemaOrigen = document.createElement('div');
                     esquemaOrigen.innerHTML = '<label>Esquema Origen</label>';
                     const eo = cloneSelectWithOptions('esquema_origen');
                     eo.className = 'extra_esquema_origen';
+                    eo.required = true;
                     esquemaOrigen.appendChild(eo);
 
                     const procDiv = document.createElement('div');
@@ -388,6 +390,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const proc = document.createElement('input');
                     proc.type = 'text';
                     proc.placeholder = 'Nombre del procedimiento';
+                    proc.required = true;
                     proc.className = 'extra_procedure';
                     procDiv.appendChild(proc);
 
@@ -405,12 +408,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     baseDestino.innerHTML = '<label>Base Destino</label>';
                     const bd = cloneSelectWithOptions('base_destino');
                     bd.className = 'extra_base_destino';
+                    bd.required = true;
                     baseDestino.appendChild(bd);
 
                     const esquemaDestino = document.createElement('div');
                     esquemaDestino.innerHTML = '<label>Esquema Destino</label>';
                     const ed = cloneSelectWithOptions('esquemas_destino');
                     ed.className = 'extra_esquema_destino';
+                    ed.required = true;
                     esquemaDestino.appendChild(ed);
 
                     rowBottom.appendChild(baseDestino);
@@ -432,6 +437,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     sol.type = 'text';
                     sol.placeholder = 'Número o referencia';
                     sol.className = 'extra_solicitud';
+                    sol.required = true;
                     solDiv.appendChild(sol);
 
                     const linkDiv = document.createElement('div');
@@ -442,6 +448,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     link.style.width = '100%';
                     link.style.maxWidth = '420px';
                     link.className = 'extra_link';
+                    link.required = true;
                     linkDiv.appendChild(link);
 
                     row.appendChild(solDiv);
@@ -460,6 +467,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     sol.type = 'text';
                     sol.placeholder = 'Número o referencia';
                     sol.className = 'extra_solicitud';
+                    sol.required = true;
                     solDiv.appendChild(sol);
 
                     const nomDiv = document.createElement('div');
@@ -468,6 +476,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     nom.type = 'text';
                     nom.placeholder = 'Nombre descriptivo';
                     nom.className = 'extra_nombre_solicitud';
+                    nom.required = true;
                     nomDiv.appendChild(nom);
 
                     row.appendChild(solDiv);
@@ -591,15 +600,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         e.preventDefault();
 
         const usuarioSeleccionado = usuarioSelect.options[usuarioSelect.selectedIndex];
-        
-        // Recolectar checkboxes seleccionadas del grupo
-        const checked = Array.from(document.querySelectorAll('.checkbox-row input[type="checkbox"]:checked')).map(i => i.value);
+            
+            // Recolectar checkboxes seleccionadas del grupo
+            const checked = Array.from(document.querySelectorAll('.checkbox-row input[type="checkbox"]:checked')).map(i => i.value);
 
-        const dbTypeValue = (document.getElementById('db_type') ? document.getElementById('db_type').value : 'oracle');
+            const dbTypeValue = (document.getElementById('db_type') ? document.getElementById('db_type').value : 'oracle');
 
-        const checkmarksFinal = Array.from(document.querySelectorAll('.checkbox-row input[type="checkbox"]:checked')).map(i => i.value);
+            const checkmarksFinal = Array.from(document.querySelectorAll('.checkbox-row input[type="checkbox"]:checked')).map(i => i.value);
 
-        const data = {
+            const data = {
             usuario: {
                 id: usuarioSelect.value,
                 nombre: usuarioSeleccionado.dataset.nombre,
