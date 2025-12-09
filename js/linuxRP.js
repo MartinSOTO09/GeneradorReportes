@@ -706,17 +706,43 @@ async function generarReleasePlan_linux(data) {
             ], 'ASAP', ' ', ' ', ' ', { text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
 
 
-            // Construir filas dinámicas agregando un renglón por cada caso adicional de Linux (basado en ejecución de solicitud)
+            // Construir filas dinámicas agregando, por cada caso adicional de Linux,
+            // primero una fila de autorización y luego la fila de ejecución.
+            // La numeración de secuencia continúa después de los dos ejemplos iniciales (1 y 2).
             const rowsRP6 = [exampleHeaders, exampleRow, exampleRow2];
             try {
                 const linuxExtras = Array.isArray(data.extra_cases) ? data.extra_cases.filter(c => c && c.type === 'linux') : [];
                 linuxExtras.forEach((c, idx) => {
-                    const seq = String(idx + 3); // después de 1 y 2
-                    const row = [[
+                    // Secuencias: para el primer extra idx=0 -> 3 (autorización), 4 (ejecución)
+                    const seqAuth = String(idx * 2 + 3);
+                    const seqExec = String(idx * 2 + 4);
+
+                    // Fila de autorización (similar a exampleRow pero usando el formato fijo de responsables)
+                    const authRow = [[
+                        { text: 'Autorizar la solicitud' },
+                        { text: ' ' },
+                        { text: 'Tamsa: ' + (c.solicitud || '') + ' - ' + (c.nombre_solicitud || ''), bold: true },
+                        { text: ' ' },
+                        { text: 'desde el comando APT - Soporte' }
+                    ], seqAuth,
+                    [
+                        { text: 'MARTINEZ R. Benjamin F.' },
+                        { text: ' ' },
+                        { text: 'TENARIS IT ' },
+                        { text: 'bfmartinezr@tenaris.com' },
+                        { text: ' ' },
+                        { text: 'DIAZ Angelica TENARIS' },
+                        { text: 'ADIAZ@tenaris.com' }
+                    ], 'ASAP', ' ', ' ', ' ', { text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
+
+                    // Fila de ejecución (similar a exampleRow2)
+                    const execRow = [[
                         { text: 'Ejecución de la solicitud ' },
                         { text: 'Tamsa: ' + (c.solicitud || '') + ' - ' + (c.nombre_solicitud || ''), bold: true }
-                    ], seq, [{ text: info.usuario.nombre }, { text: info.usuario.email }], 'ASAP', ' ', ' ', ' ', { text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
-                    rowsRP6.push(row);
+                    ], seqExec, [{ text: info.usuario.nombre }, { text: info.usuario.email }], 'ASAP', ' ', ' ', ' ', { text: '[Pending]', highlight: 'yellow', underline: UnderlineType.SINGLE }];
+
+                    rowsRP6.push(authRow);
+                    rowsRP6.push(execRow);
                 });
             } catch(_) {}
 

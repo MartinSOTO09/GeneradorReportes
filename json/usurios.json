@@ -34,5 +34,11 @@
         "nombre": "Eduardo Garcia",
         "alias": "GARCIA Eduardo",
         "email": "EDUAGARCIA@tenaris.com"
+    },
+    {
+        "id": "7",
+        "nombre": "Pastrana Litsy",
+        "alias": "PASTRANA Litsy",
+        "email": "LIPASTRANA@tenaris.com"
     }
 ]
